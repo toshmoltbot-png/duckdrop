@@ -346,6 +346,141 @@ function bountyHTML(bounty){
   return`<span class="bounty${hot?' hot':''}">${t}</span>`;
 }
 
+// ── Duck Moods ──
+function getDuckMood(duck){
+  const h=hoursSince(lastFoundTime(duck));
+  const ff=findingsForDuck(duck.id);
+  if(ff.length===0) return{emoji:'😴',mood:'Waiting',text:'Still waiting to be found for the first time...'};
+  if(h<1) return{emoji:'😎',mood:'Chillin',text:'Just changed spots. Life is good.'};
+  if(h<6) return{emoji:'🟢',mood:'Happy',text:'Getting lots of attention today!'};
+  if(h<12) return{emoji:'😐',mood:'Bored',text:'Starting to wonder if anyone is looking...'};
+  if(h<24) return{emoji:'😢',mood:'Lonely',text:'Haven\'t seen a human in a while...'};
+  if(h<48) return{emoji:'😡',mood:'Grumpy',text:'Who put me here and forgot about me?'};
+  return{emoji:'👻',mood:'Missing',text:'Has anyone filed a missing duck report?'};
+}
+
+// ── Duck Dialogue (context-aware scan quotes) ──
+function getDuckDialogue(duck){
+  const h=hoursSince(lastFoundTime(duck));
+  const ff=findingsForDuck(duck.id);
+  const lf=ff[0];
+  const loc=lf?lf.location:'somewhere';
+  const r=(duck.rarity||'').toLowerCase();
+  const lines=[];
+  if(ff.length===0){
+    lines.push('OH THANK GOODNESS. I thought I was going to spend the whole cruise behind a fake plant.');
+    lines.push('Finally! I was starting to think I was invisible.');
+    lines.push('You\'re my first! I\'ll never forget this moment.');
+  } else if(h>48){
+    lines.push('I\'ve been hiding for '+Math.floor(h)+' hours. PLEASE don\'t send me back there.');
+    lines.push('I was starting to grow barnacles. Thank you.');
+    lines.push('I thought everyone forgot about me. '+Math.floor(h)+' hours is a LONG time for a duck.');
+  } else if(h>24){
+    lines.push('Over a day behind the '+loc+'? That\'s cruel and unusual.');
+    lines.push('Do you know what it\'s like to stare at the same wall for '+Math.floor(h)+' hours?');
+    lines.push('I was THIS close to filing a complaint with guest services.');
+  } else if(h<2){
+    lines.push('That was fast! I barely got comfortable.');
+    lines.push('Already?! I just got here!');
+    lines.push('Wow, you\'re good at this. Or my hider was terrible.');
+  } else {
+    lines.push('You found me! I was getting cozy near the '+loc+'.');
+    lines.push('Nice work! I was starting to enjoy the view.');
+    lines.push('Took you '+Math.floor(h)+' hours but who\'s counting? Me. I was counting.');
+  }
+  if(r==='mythic'){
+    lines.push('You found ME? Do you know how rare I am?!');
+    lines.push('A MYTHIC duck in YOUR hands. Savor this moment.');
+  }
+  if(r==='legendary'){
+    lines.push('A legendary find! Quick, look casual.');
+  }
+  return lines[Math.floor(Math.random()*lines.length)];
+}
+
+// ── Bragging Rights ──
+function getBraggingRight(duck,ff,bounty){
+  const h=bounty.hours;
+  const today=new Date();
+  const todayFinds=ff.filter(f=>{
+    const d=new Date(f.found_at);
+    return d.toDateString()===today.toDateString();
+  });
+  const rights=[];
+  if(ff.length===0) rights.push('🏆 FIRST PERSON EVER to find '+duck.name+'!');
+  if(todayFinds.length===0) rights.push('⭐ FIRST person today to find '+duck.name+'!');
+  if(h>48) rights.push('🔥 You broke a '+Math.floor(h)+'-hour cold streak!');
+  else if(h>24) rights.push('🔥 '+duck.name+' was hiding for '+Math.floor(h)+' hours. Not anymore.');
+  if(ff.length>0&&ff.length<=2) rights.push('😱 Only '+ff.length+' other '+(ff.length===1?'person has':'people have')+' ever found this duck.');
+  const r=(duck.rarity||'').toLowerCase();
+  if(r==='mythic') rights.push('👑 You found a MYTHIC duck. There are only 2 on the entire ship.');
+  if(r==='legendary') rights.push('✨ You found a LEGENDARY duck!');
+  if(bounty.mult>=3) rights.push('💰 '+bounty.mult+'x BOUNTY BONUS! '+bounty.pts+' points!');
+  return rights.length?rights[Math.floor(Math.random()*rights.length)]:('🦆 '+duck.name+' has been found!');
+}
+
+// ── Random Celebrations ──
+function getCelebration(){
+  const themes=[
+    {emojis:['🦆','💛','🎉','⭐','✨'],text:'QUACK ATTACK!'},
+    {emojis:['🏴‍☠️','💰','💎','🪙','✨'],text:'PIRATE TREASURE!'},
+    {emojis:['🎆','🎇','🌟','💫','✨'],text:'FIREWORKS!'},
+    {emojis:['🚢','🌊','🦆','⚓','🎉'],text:'ALL ABOARD!'},
+    {emojis:['🎰','🦆','💛','🎯','🏆'],text:'JACKPOT!'},
+  ];
+  return themes[Math.floor(Math.random()*themes.length)];
+}
+
+// ── Leaderboard Titles ──
+function getLeaderTitle(rank){
+  const titles=['🦆 Duck Whisperer','🏴‍☠️ Duck Buccaneer','🚢 Captain Quackers','🎯 Pond Legend','🌊 Quack Attack','🦆 Duck Wrangler','⭐ Feather Finder','🏊 Duck Diver','🎪 Duck Ringmaster','🗺️ Duck Explorer'];
+  return rank<titles.length?titles[rank]:('🦆 Duck Hunter #'+(rank+1));
+}
+
+// ── Achievements ──
+function getMyAchievements(){try{return JSON.parse(localStorage.getItem('ducky_badges')||'[]')}catch{return[]}}
+function addAchievement(id,name,emoji,desc){
+  const a=getMyAchievements();
+  if(a.find(x=>x.id===id))return null;
+  const badge={id,name,emoji,desc,at:Date.now()};
+  a.push(badge);localStorage.setItem('ducky_badges',JSON.stringify(a));
+  return badge;
+}
+function checkAchievements(duck,bounty){
+  const earned=[];
+  const hr=new Date().getHours();
+  const r=(duck.rarity||'').toLowerCase();
+  const myFinds=getMyFinds();
+  if(hr<9) {const b=addAchievement('early_bird','Early Bird','🥇','Found a duck before 9 AM');if(b)earned.push(b)}
+  if(hr>=0&&hr<5){const b=addAchievement('night_owl','Night Owl','🌙','Found a duck after midnight');if(b)earned.push(b)}
+  if(bounty.hours>=48){const b=addAchievement('ghost_hunter','Ghost Hunter','👻','Found a duck nobody found for 48+ hours');if(b)earned.push(b)}
+  if(r==='legendary'){const b=addAchievement('lucky_duck','Lucky Duck','❤️','Found a Legendary duck');if(b)earned.push(b)}
+  if(r==='mythic'){const b=addAchievement('myth_buster','Myth Buster','👑','Found a Mythic duck');if(b)earned.push(b)}
+  if(myFinds.length>=5){const b=addAchievement('sharp_eye','Sharp Eye','🎯','Found 5 different ducks');if(b)earned.push(b)}
+  if(myFinds.length>=10){const b=addAchievement('duck_master','Duck Master','🏆','Found 10 different ducks');if(b)earned.push(b)}
+  if(myFinds.length>=17){const b=addAchievement('quack_royalty','Quack Royalty','🦆','Found all 17 ducks!');if(b)earned.push(b)}
+  return earned;
+}
+
+// ── Funny Fake Stats ──
+function getFunnyStats(duckId){
+  let h=0;for(let i=0;i<duckId.length;i++)h=(h*31+duckId.charCodeAt(i))&0xFFFFFF;
+  const s=n=>((h=h*16807%2147483647)%n)+1;
+  return[
+    'Times dropped: '+s(12),
+    'Times almost stolen by children: Probably '+s(15),
+    'Times hidden near food: '+s(8),
+    ['Most embarrassing spot: Women\'s shoe rack','Most embarrassing spot: Behind the ice cream machine','Most embarrassing spot: Inside a life vest','Most embarrassing spot: On top of the buffet sneeze guard','Most embarrassing spot: In the towel animal display'][s(5)-1]
+  ];
+}
+
+// ── Easter Egg (1% chance) ──
+function checkEasterEgg(){
+  if(Math.random()<0.01) return '🎉 THE DUCK GODS HAVE SPOKEN! You may immediately hide this duck anywhere on the ship without earning judgment from the previous hider. Quack wisely.';
+  if(Math.random()<0.02) return '🤫 Psst... turn around.';
+  return null;
+}
+
 // localStorage found tracking
 function getMyFinds(){try{return JSON.parse(localStorage.getItem('ducky_finds')||'[]')}catch{return[]}}
 function addMyFind(duckId,name,pts){
@@ -392,11 +527,11 @@ function toast(msg){
 }
 
 // ── Confetti ──
-function fireConfetti(){
+function fireConfetti(customEmojis){
   const canvas=document.getElementById('confetti-canvas');
   const ctx=canvas.getContext('2d');
   canvas.width=window.innerWidth;canvas.height=window.innerHeight;
-  const emojis=['🦆','⭐','🎉','👑','✨','💛'];
+  const emojis=customEmojis||['🦆','⭐','🎉','👑','✨','💛'];
   const particles=[];
   for(let i=0;i<60;i++){
     particles.push({
@@ -578,6 +713,7 @@ function renderHome(){
         <div class="duck-name">${esc(duck.name)}</div>
         ${badgeHTML(duck.rarity)}
         <div style="margin-top:6px">${bountyHTML(b)}</div>
+        <div class="duck-meta" style="margin-top:4px">${getDuckMood(duck).emoji} ${esc(getDuckMood(duck).text)}</div>
         <div class="duck-meta">${ff.length} find${ff.length!==1?'s':''} · ${lastSeen}</div>
       </div>
     `;
@@ -591,10 +727,10 @@ function renderHome(){
       const rc=i===0?'gold':i===1?'silver':i===2?'bronze':'';
       html+=`
         <div class="lb-row">
-          <div class="lb-rank ${rc}">${i+1}</div>
+          <div class="lb-rank ${rc}">${i<3?['🥇','🥈','🥉'][i]:(i+1)}</div>
           <div class="lb-info">
             <div class="lb-name">${esc(p.name)}</div>
-            <div class="lb-stats">${p.ducks} duck${p.ducks!==1?'s':''} found</div>
+            <div class="lb-stats">${getLeaderTitle(i)} · ${p.ducks} duck${p.ducks!==1?'s':''}</div>
           </div>
           <div class="lb-pts">${p.pts}</div>
         </div>
@@ -635,7 +771,11 @@ function renderDuck(id){
       <div class="name">${esc(duck.name)}</div>
       ${badgeHTML(duck.rarity)}
       ${duck.bio?`<div class="bio">"${esc(duck.bio)}"</div>`:''}
+      <div style="margin:10px 0;font-size:.95rem">${getDuckMood(duck).emoji} <strong>${esc(getDuckMood(duck).mood)}</strong> — ${esc(getDuckMood(duck).text)}</div>
       <div style="margin:12px 0">${bountyHTML(b)}</div>
+    </div>
+    <div class="card" style="text-align:center;font-style:italic;font-size:.95rem;color:var(--teal-dark);line-height:1.5">
+      "​${esc(getDuckDialogue(duck))}"
     </div>
     <div class="duck-stats">
       <div><span class="stat-val">${ff.length}</span>finds</div>
@@ -666,6 +806,19 @@ function renderDuck(id){
       <div style="color:var(--muted);font-size:0.85rem;margin-top:4px">You could be the first 👀</div>`;
   }
   html+=`</div>`;
+
+  // Funny stats
+  const fStats=getFunnyStats(duck.id);
+  html+=`<div class="card" style="font-size:.82rem;color:var(--muted);line-height:1.8">
+    <div style="font-weight:700;color:var(--text);margin-bottom:4px">Duck File (Classified)</div>
+    ${fStats.map(s=>'<div>'+esc(s)+'</div>').join('')}
+  </div>`;
+
+  // Easter egg check
+  const egg=checkEasterEgg();
+  if(egg){
+    html+=`<div class="card" style="text-align:center;background:var(--yellow-light);border:2px solid #FDE68A;font-weight:600;font-size:.95rem;line-height:1.5">${esc(egg)}</div>`;
+  }
 
   // Find button / steps
   html+=`
@@ -720,7 +873,9 @@ window.startFind=function(){
   const duck=window._currentDuck;
   const b=window._currentBounty;
 
-  fireConfetti();
+  const celTheme=getCelebration();
+  fireConfetti(celTheme.emojis);
+  const brag=getBraggingRight(duck,ff,b);
 
   // Celebration
   const cel=document.getElementById('step-celebrate');
@@ -728,7 +883,9 @@ window.startFind=function(){
     <div class="celebration fade-in">
       <span class="big-emoji">🎉</span>
       <div class="congrats">YOU FOUND ${esc(duck.name).toUpperCase()}!</div>
+      <div style="font-size:1.1rem;font-weight:600;margin:4px 0 8px;color:var(--teal)">${celTheme.text}</div>
       <div class="points-earned">${b.mult>1?`🔥 ${b.pts} points (${b.mult}× bounty!)`:b.pts+' points!'}</div>
+      <div style="margin-top:8px;font-size:.95rem;padding:8px 12px;background:var(--yellow-light);border-radius:10px;color:var(--text)">${brag}</div>
     </div>
   `;
   showStep('celebrate');
@@ -809,6 +966,7 @@ window.submitFind=async function(){
 
   window._currentFindingId=data.id;
   addMyFind(duck.id,duck.name,b.pts);
+  window._earnedBadges=checkAchievements(duck,b);
 
   // Show re-hide step
   const rehide=document.getElementById('step-rehide');
@@ -900,8 +1058,9 @@ function finishFlow(hint,hidePhoto){
   done.innerHTML=`
     <div class="card fade-in" style="text-align:center">
       <div style="font-size:3rem;margin-bottom:8px">✨</div>
-      <div style="font-size:1.1rem;font-weight:700;color:var(--yellow)">You're finder #${findNum} of ${esc(duck.name)}!</div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--teal)">You're finder #${findNum} of ${esc(duck.name)}!</div>
       ${bonus?`<div style="color:var(--uncommon);margin-top:6px;font-weight:600">+${bonus} bonus points earned!</div>`:''}
+      ${(window._earnedBadges||[]).length?`<div style="margin-top:12px;padding:12px;background:var(--yellow-light);border-radius:12px"><div style="font-weight:700;font-size:.85rem;margin-bottom:6px">🏅 NEW BADGE${window._earnedBadges.length>1?'S':''}!</div>${window._earnedBadges.map(b=>`<div style="font-size:.9rem">${b.emoji} <strong>${esc(b.name)}</strong> - ${esc(b.desc)}</div>`).join('')}</div>`:''}
       <div style="margin-top:16px">
         <button class="btn-secondary" onclick="location.hash='#/';location.reload()">← Back to All Ducks</button>
       </div>
