@@ -630,10 +630,11 @@ function getBraggingRight(duck,ff,bounty){
   if(r==='mythic') rights.push('👑 You found a MYTHIC duck. There are only 2 on the entire ship.');
   if(r==='legendary') rights.push('✨ You found a LEGENDARY duck!');
   if(bounty.mult>=3) rights.push('💰 '+bounty.mult+'x BOUNTY BONUS! '+bounty.pts+' points!');
-  return rights.length?rights[Math.floor(Math.random()*rights.length)]:('🦆 '+duck.name+' has been found!');
+  if(!rights.length) rights.push(EXTRA_BRAGS[Math.floor(Math.random()*EXTRA_BRAGS.length)]);
+  return rights[Math.floor(Math.random()*rights.length)];
 }
 
-// ── Random Celebrations ──
+// ── Random Celebrations (20 themes) ──
 function getCelebration(){
   const themes=[
     {emojis:['🦆','💛','🎉','⭐','✨'],text:'QUACK ATTACK!'},
@@ -641,6 +642,21 @@ function getCelebration(){
     {emojis:['🎆','🎇','🌟','💫','✨'],text:'FIREWORKS!'},
     {emojis:['🚢','🌊','🦆','⚓','🎉'],text:'ALL ABOARD!'},
     {emojis:['🎰','🦆','💛','🎯','🏆'],text:'JACKPOT!'},
+    {emojis:['🌴','🍹','☀️','🦆','🌺'],text:'TROPICAL SPLASHDOWN!'},
+    {emojis:['🚀','🌟','🦆','⭐','🌌'],text:'LIFTOFF!'},
+    {emojis:['🍵','🦆','✨','💫','🌟'],text:'DUCK ENLIGHTENMENT!'},
+    {emojis:['🏄','🌊','🦆','☀️','🤙'],text:'SURF\'S UP!'},
+    {emojis:['🍾','🎉','🦆','✨','🎀'],text:'POP THE CORK!'},
+    {emojis:['👑','🦆','✨','💫','🌟'],text:'BOW TO THE DUCK!'},
+    {emojis:['🌋','🔥','🦆','💥','✨'],text:'ERUPTION!'},
+    {emojis:['🎬','🌟','🦆','📸','✨'],text:'AND THE OSCAR GOES TO...'},
+    {emojis:['🦆','🦆','🦆','🦆','🦆'],text:'DUCK SWARM!'},
+    {emojis:['⚡','🦆','💥','🌟','🔥'],text:'THUNDERQUACK!'},
+    {emojis:['🎶','🎵','🦆','🎸','🎹'],text:'DROP THE BEAT!'},
+    {emojis:['🎩','🦆','✨','🎤','🌟'],text:'MAGIC!'},
+    {emojis:['🍔','🍕','🦆','🍦','🎉'],text:'BUFFET BLITZ!'},
+    {emojis:['🧗','🦆','✨','🌿','💫'],text:'INNER PEACE!'},
+    {emojis:['🚗','🚨','🦆','💨','✨'],text:'QUACK PURSUIT!'},
   ];
   return themes[Math.floor(Math.random()*themes.length)];
 }
@@ -846,6 +862,95 @@ function getFavoriteSpot(name){
   };
   return spots[name]||null;
 }
+
+// ── Duck Rivalries ──
+const DUCK_RIVALS={
+  'Astro':{friend:'Scuba',friendWhy:'Both explorers.',enemy:'OG',enemyWhy:'Thinks costumes are pointless.'},
+  'Speedo':{friend:'Puddles',friendWhy:'Water solidarity.',enemy:'Mango',enemyWhy:'Keeps calling him a snack.'},
+  'Jaws':{friend:'Scuba',friendWhy:'Ocean bros.',enemy:'Biscuit',enemyWhy:'He keeps trying to pet me.'},
+  'OG':{friend:'Shaggy',friendWhy:'Neither one tries too hard.',enemy:'Sparkle',enemyWhy:'Everything about her.'},
+  'Axel':{friend:'Rosie',friendWhy:'Both have attitude.',enemy:'TITANIC',enemyWhy:'Cannot appreciate music.'},
+  'Puddles':{friend:'Speedo',friendWhy:'Understands water.',enemy:'Confetti',enemyWhy:'Too loud. Too much glitter.'},
+  'Biscuit':{friend:'Luna',friendWhy:'She lets me sit near her.',enemy:'Jaws',enemyWhy:'He stares. Just stares.'},
+  'Luna':{friend:'Biscuit',friendWhy:'Quiet company.',enemy:'Confetti',enemyWhy:'Threw a party at 2 AM.'},
+  'Rosie':{friend:'Axel',friendWhy:'Respects the bandana.',enemy:'Tex',enemyWhy:'There can only be one cowboy. And it is me.'},
+  'Mango':{friend:'Confetti',friendWhy:'Both know how to party.',enemy:'Shaggy',enemyWhy:'Refuses to try a fruit hat.'},
+  'Shaggy':{friend:'OG',friendWhy:'No judgment.',enemy:'Mango',enemyWhy:'Won\'t stop commenting on my hair.'},
+  'Confetti':{friend:'Mango',friendWhy:'Tropical energy.',enemy:'Luna',enemyWhy:'She dimmed my party lights.'},
+  'Scuba':{friend:'Jaws',friendWhy:'Deep sea respect.',enemy:'Puddles',enemyWhy:'Raincoats are not diving gear.'},
+  'Sparkle':{friend:'Luna',friendWhy:'Both shine.',enemy:'Tex',enemyWhy:'Called my horn extra.'},
+  'Tex':{friend:'Rosie',friendWhy:'Mutual respect. Mostly.',enemy:'Sparkle',enemyWhy:'Called me basic. I have a HAT.'},
+  'TITANIC':{friend:'KRAKEN',friendWhy:'Only one who understands being enormous.',enemy:'Axel',enemyWhy:'Said I cannot hide. I CAN.'},
+  'KRAKEN':{friend:'TITANIC',friendWhy:'Fellow mythic.',enemy:'TITANIC',enemyWhy:'Stole my spot. Twice.'},
+};
+
+// ── Seasonal Dialogue (day-of-cruise) ──
+function getCruiseDay(){
+  const start=new Date('2026-07-05T00:00:00-04:00');
+  const now=new Date();
+  const diff=Math.floor((now-start)/(24*60*60*1000));
+  if(diff<0) return{day:0,label:'Pre-cruise',phase:'before'};
+  if(diff===0) return{day:1,label:'Embarkation Day',phase:'start'};
+  if(diff<=2) return{day:diff+1,label:'Sea Day',phase:'early'};
+  if(diff<=4) return{day:diff+1,label:'Bermuda',phase:'bermuda'};
+  if(diff===5) return{day:6,label:'Sea Day',phase:'late'};
+  if(diff===6) return{day:7,label:'Last Sea Day',phase:'ending'};
+  return{day:8,label:'Disembarkation',phase:'final'};
+}
+function getSeasonalLine(){
+  const c=getCruiseDay();
+  const lines={
+    'before':['The adventure has not even started yet!','I cannot wait to be hidden.'],
+    'start':['First day! I am so excited to be here!','Fresh out of the bag and ready to hide.','Day 1. Everything is new. Everything is wonderful.'],
+    'early':['Getting the hang of this ship life.','I have already been to more decks than most passengers.','The ocean is bigger than I expected.'],
+    'bermuda':['Bermuda! I could stay here forever.','The water here is unreal. Not that I can swim.','Island vibes hitting different today.','If they leave me in Bermuda I am not complaining.'],
+    'late':['Heading back. The vacation is winding down.','I have seen things this week. Things I cannot unsay.','The ship feels different heading home.'],
+    'ending':['I do not want to go home.','Last day. Make it count.','Promise you will hide ducks on your next cruise.','This has been the best week of my rubber life.'],
+    'final':['It is over. I will never forget this ship.','Take me with you. Or hide me for the next cruise.'],
+  };
+  const pool=lines[c.phase]||lines['early'];
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+// ── Duck Memories (reference actual findings) ──
+function getDuckMemory(duck){
+  const ff=findingsForDuck(duck.id);
+  if(ff.length===0) return null;
+  const memories=[];
+  const last=ff[0];
+  if(last.finder_name&&last.finder_name!=='Anonymous'){
+    memories.push(last.finder_name+' put me here. I have opinions about their choice.');
+    memories.push('Tell '+last.finder_name+' I said thanks. Or don\'t. I am a duck, not a messenger.');
+  }
+  if(last.location){
+    memories.push('I have been near the '+last.location+' for a while. The view is... fine.');
+    memories.push('The '+last.location+' is nice but I have seen better.');
+  }
+  if(last.difficulty==='evil'){
+    memories.push('Whoever hid me last was EVIL about it. Their word, not mine.');
+  }
+  if(ff.length>=5){
+    memories.push('I have been found '+ff.length+' times. I am basically famous.');
+  }
+  if(ff.length>=3){
+    memories.push(ff.length+' finders and counting. I am the most popular duck and nobody can tell me otherwise.');
+  }
+  return memories.length?memories[Math.floor(Math.random()*memories.length)]:null;
+}
+
+// ── More Bragging Right Variations ──
+const EXTRA_BRAGS=[
+  'The ducks will speak of this moment for generations.',
+  'Somewhere on this ship, another duck just got jealous.',
+  'Your duck-finding instincts are honestly frightening.',
+  'The cruise director wishes they were this good.',
+  'You did not just find a duck. You made a friend.',
+  'This is going on your cruise resume.',
+  'The other finders are shaking.',
+  'Duck hunting talent: confirmed.',
+  'Your table at dinner is going to hear about this.',
+  'Screenshot this. You will want to remember it.',
+];
 
 // ── Easter Egg (1% chance) ──
 function checkEasterEgg(){
@@ -1171,7 +1276,14 @@ function renderDuck(id){
       <div class="reveal-delay-2" style="margin-top:8px;font-style:normal;font-size:.85rem;color:var(--muted)">${esc(getQuack(duck.name))}</div>
     </div>
     ${getDuckGossip(duck.name)?`<div class="card" style="font-size:.85rem;color:var(--muted);font-style:italic;line-height:1.5">🤫 <em>${esc(getDuckGossip(duck.name))}</em></div>`:''}
-    ${getFavoriteSpot(duck.name)?`<div style="text-align:center;font-size:.82rem;color:var(--muted);margin:4px 0 8px">📍 ${esc(getFavoriteSpot(duck.name))}</div>`:''}
+    ${getFavoriteSpot(duck.name)?`<div style="text-align:center;font-size:.82rem;color:var(--muted);margin:4px 0 4px">📍 ${esc(getFavoriteSpot(duck.name))}</div>`:''}
+    ${DUCK_RIVALS[duck.name]?`<div class="card" style="font-size:.82rem;line-height:1.6">
+      <div style="font-weight:700;margin-bottom:4px">Relationships</div>
+      <div>💚 <strong>${esc(DUCK_RIVALS[duck.name].friend)}</strong> <span style="color:var(--muted)">${esc(DUCK_RIVALS[duck.name].friendWhy)}</span></div>
+      <div>🔴 <strong>${esc(DUCK_RIVALS[duck.name].enemy)}</strong> <span style="color:var(--muted)">${esc(DUCK_RIVALS[duck.name].enemyWhy)}</span></div>
+    </div>`:''}
+    ${getDuckMemory(duck)?`<div class="card reveal-delay" style="font-size:.88rem;font-style:italic;color:var(--muted);text-align:center;line-height:1.5">🧠 ${esc(getDuckMemory(duck))}</div>`:''}
+    <div class="reveal-delay-2" style="text-align:center;font-size:.82rem;color:var(--muted);margin:4px 0 8px;font-style:italic">🚢 ${esc(getSeasonalLine())}</div>
     <div class="duck-stats">
       <div><span class="stat-val">${ff.length}</span>finds</div>
       <div><span class="stat-val">${uniqueLocations.size}</span>locations</div>
