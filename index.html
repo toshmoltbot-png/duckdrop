@@ -11,17 +11,14 @@
     body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--navy);color:white;min-height:100vh}
     a{color:inherit;text-decoration:none}
 
-    /* Header */
     .top{background:rgba(24,48,80,.95);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.12);padding:14px 16px;text-align:center}
     .brand{font-weight:900;font-size:26px;color:var(--yellow);letter-spacing:-.5px}
     .tagline{color:var(--muted);font-size:13px;margin-top:2px}
 
-    /* Layout */
     .wrap{max-width:680px;margin:auto;padding:16px 14px 80px}
     h2{font-size:22px;font-weight:900;margin:28px 0 12px;display:flex;align-items:center;gap:8px}
     h2 .emoji{font-size:26px}
 
-    /* Duck cards on home */
     .ducks{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px}
     .dcard{background:var(--paper);color:var(--ink);border-radius:10px;padding:12px;text-align:center;transition:transform .15s}
     .dcard:active{transform:scale(.97)}
@@ -29,10 +26,10 @@
     .dcard.super .icon{font-size:52px}
     .dcard h3{font-size:14px;font-weight:800;margin:6px 0 2px}
     .dcard .finds{font-size:12px;color:#666}
+    .dcard .spots{font-size:10px;color:#999;margin-top:2px}
     .dcard.super{border:2px solid var(--yellow);background:linear-gradient(135deg,#fffbe6,#fff3b0)}
     .dcard.super h3{color:#b8860b}
 
-    /* Leaderboard */
     .lb{list-style:none}
     .lb li{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.1)}
     .lb li:last-child{border:0}
@@ -42,20 +39,33 @@
     .rank.b{background:linear-gradient(135deg,#cd7f32,#daa060)}
     .lb .name{font-weight:700;font-size:15px}
     .lb .meta{color:var(--muted);font-size:12px}
+    .lb .pts{margin-left:auto;color:var(--yellow);font-weight:900;font-size:18px;flex-shrink:0}
 
-    /* Duck detail page */
+    /* Photo wall */
+    .photowall{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px}
+    .photowall img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px}
+    .photowall .pw-cap{position:relative}
+    .photowall .pw-name{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);color:white;font-size:9px;font-weight:700;padding:2px 4px;border-radius:0 0 8px 8px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+
+    /* Most traveled */
+    .traveled{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
+    .traveled .tcard{background:#24456c;border-radius:10px;padding:12px 8px}
+    .traveled .tcard .tn{font-size:13px;font-weight:800;margin-bottom:4px}
+    .traveled .tcard b{font-size:20px;color:var(--yellow);display:block}
+    .traveled .tcard span{font-size:10px;color:var(--muted)}
+
     .hero{padding:20px 0 8px;text-align:center}
     .hero .big-icon{font-size:72px;line-height:1}
     .hero h1{font-size:32px;font-weight:950;margin:8px 0 4px;color:var(--yellow)}
     .hero .sub{color:var(--muted);font-size:15px}
     .hero .super-badge{display:inline-block;background:var(--yellow);color:var(--ink);font-weight:900;font-size:11px;padding:4px 10px;border-radius:99px;margin-top:6px;text-transform:uppercase;letter-spacing:.05em}
+    .hero .finder-count{font-size:18px;font-weight:800;margin-top:10px;color:var(--ok)}
 
     .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
     .stat{background:#24456c;border-radius:10px;padding:12px;text-align:center}
     .stat b{font-size:22px;color:var(--yellow);display:block}
     .stat span{font-size:12px;color:var(--muted)}
 
-    /* Find form */
     .panel{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:16px;margin:16px 0}
     .panel h2{margin:0 0 12px;font-size:18px}
     label{display:block;font-weight:700;font-size:13px;margin:10px 0 4px;color:var(--muted)}
@@ -64,8 +74,14 @@
     .btn{display:block;width:100%;border:0;border-radius:10px;background:var(--yellow);color:var(--ink);padding:14px;font-weight:900;font-size:16px;cursor:pointer;margin-top:14px;min-height:48px}
     .btn:disabled{opacity:.5}
     .btn.back{background:#24456c;color:white;font-size:14px;margin:16px 0 0;padding:12px}
+    .btn.rehide{background:var(--ok);color:white;margin-top:10px}
 
-    /* Passport */
+    /* Re-hide prompt */
+    .rehide-box{background:linear-gradient(135deg,#1f5a45,#24705a);border:2px solid var(--ok);border-radius:12px;padding:20px;margin:16px 0;text-align:center}
+    .rehide-box h3{font-size:20px;margin-bottom:8px}
+    .rehide-box p{font-size:14px;color:#b0e8c8;margin-bottom:12px}
+    .rehide-box .steps{text-align:left;font-size:13px;line-height:1.8;color:#d0f0e0}
+
     .passport{list-style:none;margin:12px 0 0}
     .passport li{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);align-items:center}
     .passport li:last-child{border:0}
@@ -74,25 +90,22 @@
     .passport .pmeta{color:var(--muted);font-size:12px}
     .passport .photo{width:48px;height:48px;object-fit:cover;border-radius:8px;margin-left:auto;flex-shrink:0}
 
-    /* Alerts */
     .msg{padding:12px;border-radius:8px;margin:12px 0;font-weight:600;font-size:14px}
     .msg.ok{background:#1f5a45;color:#d7ffe7}
     .msg.err{background:#512337;color:#ffd8e2}
     .empty{text-align:center;color:var(--muted);padding:24px 10px;font-size:14px}
 
-    /* Confetti */
     #confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9}
     .conf{position:absolute;top:-12px;font-size:22px;animation:fall 1.8s linear forwards}
     @keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.2}}
 
-    /* Footer */
     .foot{text-align:center;color:var(--muted);font-size:11px;padding:32px 0 16px;opacity:.6}
   </style>
 </head>
 <body>
   <header class="top">
     <div class="brand">🦆 Find the Duckies!</div>
-    <div class="tagline">Scan a duck. Stamp its passport. Climb the leaderboard.</div>
+    <div class="tagline">Scan a duck. Stamp its passport. Re-hide it. Climb the leaderboard.</div>
   </header>
   <main class="wrap" id="app"><div class="empty">Loading...</div></main>
   <div id="confetti"></div>
@@ -100,15 +113,15 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
   const SUPABASE_URL='https://udzuqfzbynyxlugxwhyx.supabase.co';
-  const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkenVxZnpieW55eGx1Z3h3aHl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMDE5NzUsImV4cCI6MjA5ODc3Nzk3NX0.b2vI7soo5h8ZDvy3lzfikC71xOToWqqISdPIg0zVycI';
-  const SITE_URL=location.origin+location.pathname;
-  const LOCATIONS=['Pool Deck','Lido Deck','Casino','Buffet','Bar','Lobby','Elevator','Cabin Hallway','Theater','Gym','Spa','Kids Club','Dining Room','Stairwell','Other'];
+  const SUPABASE_ANON_KEY='eyJhbG…VycI';
+  const LOCATIONS=['Pool Deck','Lido Deck','Casino','Buffet','Bar','Lobby','Elevator','Cabin Hallway','Theater','Gym','Spa','Kids Club','Dining Room','Stairwell','Library','Sports Deck','Promenade','Other'];
   const app=document.getElementById('app');
   const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
   let ducks=[],findings=[];
 
   function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
   function time(t){return t?new Date(t).toLocaleString([],{dateStyle:'short',timeStyle:'short'}):''}
+  function ordinal(n){const s=['th','st','nd','rd'];const v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])}
 
   async function loadData(){
     const[d,f]=await Promise.all([
@@ -120,7 +133,10 @@
   }
 
   function count(id){return findings.filter(f=>f.duck_id===id).length}
+  function uniqueSpots(id){return new Set(findings.filter(f=>f.duck_id===id).map(f=>f.location)).size}
   function lastSpot(id){const f=findings.find(f=>f.duck_id===id);return f?f.location:'Hidden'}
+  function isSuper(d){return d.description?.includes('[SUPER]')}
+  function cleanDesc(d){return(d.description||'').replace('[SUPER]','').trim()}
 
   addEventListener('hashchange',route);
   addEventListener('load',route);
@@ -128,20 +144,46 @@
   async function route(){
     const hash=location.hash||'';
     app.innerHTML='<div class="empty">Loading ducks...</div>';
-    try{await loadData()}catch(e){app.innerHTML='<div class="msg err">Could not load data. Check your connection.</div>';return}
+    try{await loadData()}catch(e){app.innerHTML='<div class="msg err">Could not load. Check your connection and try again.</div>';return}
     const m=hash.match(/#\/duck\/(.+)/);
     if(m) return duckPage(m[1]);
     homePage();
   }
 
+  // === SCORING ===
+  // 1 point per find, 2 bonus points for re-hiding (every find after the first on any duck = someone re-hid it)
+  function buildLeaderboard(){
+    const m={};
+    findings.forEach(f=>{
+      const k=(f.finder_name||'').trim();
+      if(!k)return;
+      if(!m[k])m[k]={name:k,finds:0,points:0,last:f.found_at};
+      m[k].finds++;
+      m[k].points+=3; // 1 for find + 2 for re-hide (you found AND will re-hide)
+      if(new Date(f.found_at)>new Date(m[k].last))m[k].last=f.found_at;
+    });
+    return Object.values(m).sort((a,b)=>b.points-a.points||new Date(b.last)-new Date(a.last));
+  }
+
+  function getMostTraveled(){
+    const m={};
+    ducks.forEach(d=>{
+      const spots=new Set(findings.filter(f=>f.duck_id===d.id).map(f=>f.location).filter(Boolean));
+      m[d.id]={name:d.name,spots:spots.size,super:isSuper(d)};
+    });
+    return Object.values(m).sort((a,b)=>b.spots-a.spots).slice(0,3);
+  }
+
   function homePage(){
-    const minis=ducks.filter(d=>!d.description?.includes('[SUPER]'));
-    const supers=ducks.filter(d=>d.description?.includes('[SUPER]'));
+    const minis=ducks.filter(d=>!isSuper(d));
+    const supers=ducks.filter(d=>isSuper(d));
     const lb=buildLeaderboard();
+    const traveled=getMostTraveled();
+    const photos=findings.filter(f=>f.photo_url).slice(0,12);
 
     let html='';
 
-    // Super ducks first if any
+    // Super ducks
     if(supers.length){
       html+=`<h2><span class="emoji">👑</span> Super Ducks</h2>
         <div class="ducks">${supers.map(d=>`
@@ -149,6 +191,7 @@
             <div class="icon">🦆</div>
             <h3>${esc(d.name)}</h3>
             <div class="finds">${count(d.id)} finds</div>
+            <div class="spots">${uniqueSpots(d.id)} locations visited</div>
           </a>`).join('')}</div>`;
     }
 
@@ -159,54 +202,66 @@
           <div class="icon">🦆</div>
           <h3>${esc(d.name)}</h3>
           <div class="finds">${count(d.id)} finds</div>
+          <div class="spots">${uniqueSpots(d.id)} locations</div>
         </a>`).join('')}</div>`;
+
+    // Most traveled
+    if(traveled.some(t=>t.spots>0)){
+      html+=`<h2><span class="emoji">🗺</span> Most Traveled</h2>
+        <div class="traveled">${traveled.map(t=>`
+          <div class="tcard">
+            <div class="tn">${t.super?'👑 ':''}${esc(t.name)}</div>
+            <b>${t.spots}</b>
+            <span>locations</span>
+          </div>`).join('')}</div>`;
+    }
 
     // Leaderboard
     html+=`<h2><span class="emoji">🏆</span> Leaderboard</h2>`;
     if(lb.length){
       html+=`<ol class="lb">${lb.map((r,i)=>{
         const cls=i===0?'g':i===1?'s':i===2?'b':'';
-        return `<li><span class="rank ${cls}">${i+1}</span><div><div class="name">${esc(r.name)}</div><div class="meta">${r.count} duck${r.count===1?'':'s'} found</div></div></li>`;
+        return `<li><span class="rank ${cls}">${i+1}</span><div><div class="name">${esc(r.name)}</div><div class="meta">${r.finds} duck${r.finds===1?'':'s'} found</div></div><div class="pts">${r.points} pts</div></li>`;
       }).join('')}</ol>`;
     } else {
-      html+='<div class="empty">No finds yet. Be the first!</div>';
+      html+='<div class="empty">No finds yet. Scan a duck to be first!</div>';
+    }
+
+    // Photo wall
+    if(photos.length){
+      html+=`<h2><span class="emoji">📸</span> Recent Finds</h2>
+        <div class="photowall">${photos.map(f=>{
+          const d=ducks.find(x=>x.id===f.duck_id);
+          return `<div class="pw-cap"><img src="${esc(f.photo_url)}" alt="" loading="lazy"><div class="pw-name">${esc(f.finder_name)}</div></div>`;
+        }).join('')}</div>`;
     }
 
     html+='<div class="foot">FindtheDuckies.com</div>';
     app.innerHTML=html;
   }
 
-  function buildLeaderboard(){
-    const m={};
-    findings.forEach(f=>{
-      const k=(f.finder_name||'').trim();
-      if(!k)return;
-      if(!m[k])m[k]={name:k,count:0,last:f.found_at};
-      m[k].count++;
-      if(new Date(f.found_at)>new Date(m[k].last))m[k].last=f.found_at;
-    });
-    return Object.values(m).sort((a,b)=>b.count-a.count||new Date(b.last)-new Date(a.last));
-  }
-
   function duckPage(id){
     const d=ducks.find(x=>x.id===id);
     if(!d){app.innerHTML='<div class="msg err">Duck not found.</div><a class="btn back" href="#/">Back to all ducks</a>';return}
     const fs=findings.filter(f=>f.duck_id===id).sort((a,b)=>new Date(b.found_at)-new Date(a.found_at));
-    const isSuper=d.description?.includes('[SUPER]');
-    const desc=(d.description||'').replace('[SUPER]','').trim();
+    const sup=isSuper(d);
+    const desc=cleanDesc(d);
+    const n=fs.length;
+    const spots=uniqueSpots(id);
 
     app.innerHTML=`
       <div class="hero">
-        <div class="big-icon">🦆</div>
+        <div class="big-icon">${sup?'👑🦆':'🦆'}</div>
         <h1>${esc(d.name)}</h1>
         <div class="sub">Hidden by ${esc(d.hidden_by)}</div>
-        ${isSuper?'<div class="super-badge">👑 Super Duck</div>':''}
+        ${sup?'<div class="super-badge">Super Duck</div>':''}
         ${desc?`<div class="sub" style="margin-top:8px">${esc(desc)}</div>`:''}
+        <div class="finder-count">${n>0?`🎉 You're the ${ordinal(n+1)} person to find this duck!`:'🎉 You\'re the FIRST person to find this duck!'}</div>
       </div>
 
       <div class="stats">
-        <div class="stat"><b>${fs.length}</b><span>passport stamps</span></div>
-        <div class="stat"><b>${esc(fs[0]?.location||'Not found yet')}</b><span>last spotted</span></div>
+        <div class="stat"><b>${n}</b><span>passport stamps</span></div>
+        <div class="stat"><b>${spots}</b><span>locations visited</span></div>
       </div>
 
       <div class="panel">
@@ -216,14 +271,15 @@
           <input name="finder_name" maxlength="40" required placeholder="What should we call you?">
           <label>Where did you find this duck?</label>
           <select name="location">${LOCATIONS.map(l=>`<option>${l}</option>`).join('')}</select>
-          <label>Photo (optional)</label>
-          <input name="photo" type="file" accept="image/*">
+          <label>Snap a photo (optional)</label>
+          <input name="photo" type="file" accept="image/*" capture="environment">
           <button class="btn" type="submit">Stamp the Passport 🦆</button>
         </form>
       </div>
 
       <div class="panel">
         <h2>📜 Duck Passport</h2>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:8px">Every finder, every location. This duck's journey across the ship.</p>
         ${fs.length?`<ol class="passport">${fs.map((f,i)=>`
           <li>
             <span class="stamp">${fs.length-i}</span>
@@ -232,7 +288,7 @@
               <div class="pmeta">${esc(f.location||'Somewhere onboard')} · ${time(f.found_at)}</div>
             </div>
             ${f.photo_url?`<img class="photo" src="${esc(f.photo_url)}" alt="">`:''}
-          </li>`).join('')}</ol>`:'<div class="empty">No stamps yet. You\'re the first!</div>'}
+          </li>`).join('')}</ol>`:'<div class="empty">No stamps yet. You\'re about to be the first!</div>'}
       </div>
 
       <a class="btn back" href="#/">← All Ducks & Leaderboard</a>
@@ -258,12 +314,55 @@
       if(ins.error) throw ins.error;
       celebrate();
       await loadData();
-      duckPage(duck_id);
-      app.insertAdjacentHTML('afterbegin','<div class="msg ok">🎉 Passport stamped! Happy hunting!</div>');
+      showRehidePrompt(duck_id,fd.get('finder_name').trim());
     }catch(err){
       app.insertAdjacentHTML('afterbegin','<div class="msg err">Could not log find: '+esc(err.message)+'</div>');
       btn.disabled=false;btn.textContent='Stamp the Passport 🦆';
     }
+  }
+
+  function showRehidePrompt(duck_id,name){
+    const d=ducks.find(x=>x.id===duck_id);
+    const fs=findings.filter(f=>f.duck_id===duck_id);
+
+    app.innerHTML=`
+      <div class="hero">
+        <div class="big-icon">🎉</div>
+        <h1>Passport Stamped!</h1>
+        <div class="sub">Nice find, ${esc(name)}!</div>
+      </div>
+
+      <div class="rehide-box">
+        <h3>🔄 Now Re-Hide This Duck!</h3>
+        <p>The adventure doesn't stop here. Hide ${esc(d.name)} somewhere new on the ship for the next person to find!</p>
+        <div class="steps">
+          1. Pick a sneaky spot 👀<br>
+          2. Place the duck where someone will stumble on it<br>
+          3. Make sure the QR code is visible<br>
+          4. Walk away and wait for the leaderboard to update 😎
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><b>${fs.length}</b><span>total finds</span></div>
+        <div class="stat"><b>${uniqueSpots(duck_id)}</b><span>locations visited</span></div>
+      </div>
+
+      <div class="panel">
+        <h2>📜 ${esc(d.name)}'s Journey</h2>
+        ${fs.length?`<ol class="passport">${fs.sort((a,b)=>new Date(b.found_at)-new Date(a.found_at)).map((f,i)=>`
+          <li>
+            <span class="stamp">${fs.length-i}</span>
+            <div>
+              <div class="pname">${esc(f.finder_name)}</div>
+              <div class="pmeta">${esc(f.location||'Somewhere')} · ${time(f.found_at)}</div>
+            </div>
+            ${f.photo_url?`<img class="photo" src="${esc(f.photo_url)}" alt="">`:''}
+          </li>`).join('')}</ol>`:''}
+      </div>
+
+      <a class="btn back" href="#/">← All Ducks & Leaderboard</a>
+      <div class="foot">FindtheDuckies.com</div>`;
   }
 
   function shrink(file){return new Promise((res,rej)=>{
