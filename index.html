@@ -1286,19 +1286,6 @@ function renderDuck(id){
       <div style="margin:10px 0;font-size:.95rem">${getDuckMood(duck).emoji} <strong>${esc(getDuckMood(duck).mood)}</strong> — ${esc(getDuckMood(duck).text)}</div>
       <div style="margin:12px 0">${bountyHTML(b)}</div>
     </div>
-    <div class="card reveal-delay" style="text-align:center;font-style:italic;font-size:.95rem;color:var(--teal-dark);line-height:1.5">
-      "​${esc(getDuckDialogue(duck))}"
-      <div class="reveal-delay-2" style="margin-top:8px;font-style:normal;font-size:.85rem;color:var(--muted)">${esc(getQuack(duck.name))}</div>
-    </div>
-    ${getDuckGossip(duck.name)?`<div class="card" style="font-size:.85rem;color:var(--muted);font-style:italic;line-height:1.5">🤫 <em>${esc(getDuckGossip(duck.name))}</em></div>`:''}
-    ${getFavoriteSpot(duck.name)?`<div style="text-align:center;font-size:.82rem;color:var(--muted);margin:4px 0 4px">📍 ${esc(getFavoriteSpot(duck.name))}</div>`:''}
-    ${DUCK_RIVALS[duck.name]?`<div class="card" style="font-size:.82rem;line-height:1.6">
-      <div style="font-weight:700;margin-bottom:4px">Relationships</div>
-      <div>💚 <strong>${esc(DUCK_RIVALS[duck.name].friend)}</strong> <span style="color:var(--muted)">${esc(DUCK_RIVALS[duck.name].friendWhy)}</span></div>
-      <div>🔴 <strong>${esc(DUCK_RIVALS[duck.name].enemy)}</strong> <span style="color:var(--muted)">${esc(DUCK_RIVALS[duck.name].enemyWhy)}</span></div>
-    </div>`:''}
-    ${getDuckMemory(duck)?`<div class="card reveal-delay" style="font-size:.88rem;font-style:italic;color:var(--muted);text-align:center;line-height:1.5">🧠 ${esc(getDuckMemory(duck))}</div>`:''}
-    <div class="reveal-delay-2" style="text-align:center;font-size:.82rem;color:var(--muted);margin:4px 0 8px;font-style:italic">🚢 ${esc(getSeasonalLine())}</div>
     <div class="duck-stats">
       <div><span class="stat-val">${ff.length}</span>finds</div>
       <div><span class="stat-val">${uniqueLocations.size}</span>locations</div>
@@ -1332,29 +1319,16 @@ function renderDuck(id){
   // Welcome back (duck remembers you)
   const wb=getWelcomeBack(duck);
   if(wb){
-    html+=`<div class="card" style="text-align:center;background:var(--teal-light);border:2px solid #A7F3D0;font-size:.95rem;line-height:1.5">
-      <div style="font-weight:700;font-size:1.05rem;margin-bottom:4px">👋 ${esc(wb.text)}</div>
+    html+=`<div class="card" style="text-align:center;font-size:.92rem;line-height:1.5">
+      <div style="font-weight:700;font-size:1rem;margin-bottom:4px">👋 ${esc(wb.text)}</div>
     </div>`;
   }
 
-  // Funny stats
-  const fStats=getFunnyStats(duck.id);
-  html+=`<div class="card" style="font-size:.82rem;color:var(--muted);line-height:1.8">
-    <div style="font-weight:700;color:var(--text);margin-bottom:4px">Duck File (Classified)</div>
-    ${fStats.map(s=>'<div>'+esc(s)+'</div>').join('')}
-  </div>`;
-
-  // Easter egg check
-  const egg=checkEasterEgg();
-  if(egg){
-    html+=`<div class="card" style="text-align:center;background:var(--yellow-light);border:2px solid #FDE68A;font-weight:600;font-size:.95rem;line-height:1.5">${esc(egg)}</div>`;
-  }
-
-  // Find button / steps
+  // Find button / steps — ABOVE personality content
   html+=`
     <div id="find-flow">
       <div id="step-button" class="step active" style="margin:16px 0">
-        <button class="btn-primary" onclick="startFind()">🎉 I FOUND ${esc(duck.name).toUpperCase()}!</button>
+        <button class="btn-primary" onclick="startFind()" id="find-btn">🎉 I FOUND ${esc(duck.name).toUpperCase()}!</button>
       </div>
       <div id="step-celebrate" class="step"></div>
       <div id="step-form" class="step"></div>
@@ -1362,6 +1336,21 @@ function renderDuck(id){
       <div id="step-done" class="step"></div>
     </div>
   `;
+
+  // Personality content below the CTA
+  html+=`<div class="card reveal-delay" style="text-align:center;font-style:italic;font-size:.92rem;color:var(--teal);line-height:1.5">`
+    +`"\u200b${esc(getDuckDialogue(duck))}"`
+    +`<div class="reveal-delay-2" style="margin-top:8px;font-style:normal;font-size:.82rem;color:var(--muted)">${esc(getQuack(duck.name))}</div>`
+    +`</div>`;
+  const gossipLine=getDuckGossip(duck.name);
+  if(gossipLine) html+=`<div class="card" style="font-size:.82rem;color:var(--muted);font-style:italic;line-height:1.5">\ud83e\udd2b <em>${esc(gossipLine)}</em></div>`;
+  if(getFavoriteSpot(duck.name)) html+=`<div style="text-align:center;font-size:.78rem;color:var(--muted);margin:4px 0">\ud83d\udccd ${esc(getFavoriteSpot(duck.name))}</div>`;
+  if(DUCK_RIVALS[duck.name]) html+=`<div class="card" style="font-size:.8rem;line-height:1.6">`
+    +`<div style="font-weight:700;margin-bottom:4px">Relationships</div>`
+    +`<div>\ud83d\udc9a <strong>${esc(DUCK_RIVALS[duck.name].friend)}</strong> <span style="color:var(--muted)">${esc(DUCK_RIVALS[duck.name].friendWhy)}</span></div>`
+    +`<div>\ud83d\udd34 <strong>${esc(DUCK_RIVALS[duck.name].enemy)}</strong> <span style="color:var(--muted)">${esc(DUCK_RIVALS[duck.name].enemyWhy)}</span></div>`
+    +`</div>`;
+  html+=`<div style="text-align:center;font-size:.78rem;color:var(--muted);margin:4px 0;font-style:italic">\ud83d\udea2 ${esc(getSeasonalLine())}</div>`;
 
   // Passport
   if(ff.length){
@@ -1383,6 +1372,15 @@ function renderDuck(id){
     html+=`</div></div>`;
   }
 
+  // Funny stats
+  const fStats=getFunnyStats(duck.id);
+  html+=`<div class="card" style="font-size:.78rem;color:var(--muted);line-height:1.8">`
+    +`<div style="font-weight:700;color:var(--text);margin-bottom:4px;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">Duck File (Classified)</div>`
+    +fStats.map(s=>'<div>'+esc(s)+'</div>').join('')
+    +`</div>`;
+  const egg=checkEasterEgg();
+  if(egg) html+=`<div class="card" style="text-align:center;background:var(--yellow-light);border:1px solid rgba(240,180,42,.2);font-weight:600;font-size:.88rem;line-height:1.5">${esc(egg)}</div>`;
+
   html+=`<div class="footer">FindtheDuckies.com · Boston to Bermuda 2026</div>`;
   app.innerHTML=html;
 
@@ -1400,6 +1398,8 @@ function showStep(name){
 }
 
 window.startFind=function(){
+  const btn=document.getElementById('find-btn');
+  if(btn){btn.disabled=true;btn.textContent='Logging...';}
   const duck=window._currentDuck;
   const b=window._currentBounty;
 
