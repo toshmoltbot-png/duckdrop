@@ -282,6 +282,8 @@ textarea{resize:vertical;min-height:80px}
 /* ── Utils ── */
 .fade-in{animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.reveal-delay{opacity:0;animation:fadeIn .5s ease forwards;animation-delay:.4s}
+.reveal-delay-2{opacity:0;animation:fadeIn .4s ease forwards;animation-delay:.7s}
 
 .toast{
   position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
@@ -360,43 +362,254 @@ function getDuckMood(duck){
   return{emoji:'👻',mood:'Missing',text:'Has anyone filed a missing duck report?'};
 }
 
-// ── Duck Dialogue (context-aware scan quotes) ──
+// ── Duck Dialogue (personality-driven) ──
+const DUCK_LINES={
+  'Astro':[
+    'Houston, we have a problem. Someone found me.',
+    'I have been in orbit around Deck 9 for 6 hours. Send snacks.',
+    'One small step for man. One giant quack for duckkind.',
+    'Ground control to Major Duck. The buffet closes at 10.',
+    'I have seen things you would not believe. Mostly the inside of a potted plant.',
+    'Space is lonely. But not as lonely as behind the ice machine.',
+    'They said I could be anything. So I became a duck astronaut on a cruise ship.',
+    'Mission log: still no sign of intelligent life near the elevator.',
+    'I trained for years. Simulations. Zero gravity. Nothing prepared me for being wedged behind a napkin dispenser.',
+    'The stars are beautiful from up here. Just kidding, I can see the ceiling.',
+    'Mission control lost contact 12 hours ago. I think they went to the casino.',
+    'I request immediate extraction. And maybe a towel animal.',
+    'Buzz Aldrin never had to deal with this.',
+    'My oxygen is running low. Just kidding. I am rubber. But still.',
+    'I have orbited this ship twice. The pizza is better on Deck 12.',
+    'NASA spent millions on my training. I am hiding near a shoe rack.',
+    '3... 2... 1... You found me. Mission complete.',
+    'Tell my family I quacked bravely.',
+    'The spacewalk was fine. It is the hiding behind a fake plant that broke me.',
+    'Final transmission: if you are reading this, I am behind something boring.',
+  ],
+  'Speedo':[
+    'Forgot my trunks on the last cruise. Still showing up.',
+    'The pool is RIGHT THERE and nobody will let me in.',
+    'I have been doing laps. In my mind. I cannot move.',
+    'Someone left me by the hot tub. Best day of my life.',
+    'Chlorine is my cologne.',
+    'I was a competitive swimmer. Then I became rubber and everything changed.',
+    'The lifeguard keeps giving me looks. Jealousy, probably.',
+    'Abs are hard to maintain when you are made of plastic.',
+    'Cannonball! Just kidding. I would sink.',
+    'I do not need a towel. I do not get wet. I AM the wet.',
+    'They said dress for the job you want. So here I am.',
+    'Marco? ...Anyone?',
+  ],
+  'Jaws':[
+    'You are gonna need a bigger duck.',
+    'Just when you thought it was safe to go back in the hallway.',
+    'I am not actually scary. The costume is 90% of it.',
+    'Everyone runs. Nobody asks how I am feeling.',
+    'Do you know how hard it is to look menacing at 3 inches tall?',
+    'The pool refuses to let me in. Discrimination.',
+    'I did not choose the shark life. Actually, yes I did.',
+    'Legendary status. Zero respect. That is my life.',
+    'They put me near the buffet. I have never been more insulted.',
+    'Fun fact: sharks never stop swimming. I never stop being found behind furniture.',
+    'People keep putting me near the pool. I CANNOT SWIM. I am rubber.',
+    'The real Jaws did not have to deal with toddlers trying to eat him.',
+    'I have been called cute 47 times today. I am a PREDATOR.',
+    'Somewhere out there, a real shark is jealous of my costume.',
+    'Fear me. Or don\'t. I am honestly fine either way.',
+  ],
+  'OG':[
+    'No costume. No gimmick. Just vibes.',
+    'I was here before costumes were cool. I will be here after.',
+    'Everyone asks why I do not wear a costume. Nobody asks how I am doing.',
+    'Classic never goes out of style. Write that down.',
+    'They call me basic. I call myself iconic.',
+    'Sparkle has glitter. Tex has a hat. I have AUTHENTICITY.',
+    'You want a gimmick? Go find Confetti. I am the real deal.',
+    'Simple. Clean. Yellow. What more do you need?',
+    'I am the OG for a reason. Do not forget it.',
+    'Every duck on this ship wishes they had my confidence.',
+    'No accessories required. Born perfect.',
+    'I have been hiding in plain sight. Because I am plain. And I am sight.',
+  ],
+  'Axel':[
+    'Shreds harder than the cruise band. Which is not saying much.',
+    'I wrote a song about being hidden behind a plant. It is called "Leaf Me Alone."',
+    'This guitar is not just for show. Okay, it is. I cannot play it. No fingers.',
+    'Rock and roll never dies. But it does get wedged behind a vending machine.',
+    'The cruise band asked me to sit in. I said I only play stadiums.',
+    'Every hiding spot is a stage if you believe hard enough.',
+    'I am basically the Mick Jagger of rubber ducks.',
+    'You found me during my sound check. Not ideal.',
+    'Encore! ENCORE! Oh wait, you are just picking me up.',
+    'The guitar solo I just played was incredible. You missed it.',
+    'My rider says I need a bowl of M&Ms. No brown ones.',
+    'I was headlining Deck 9. Sold out show. Audience of zero.',
+  ],
+  'Puddles':[
+    'Always prepared. Never needed it. Story of my life.',
+    'It is a cruise. In July. And I have a raincoat. I KNOW.',
+    'Everyone laughs until it rains. Then who is laughing? Still them, because it never rains.',
+    'This raincoat is fashion, not function.',
+    'I have been dry for 7 days straight. My raincoat is disappointed.',
+    'They put me near the pool deck. The irony is not lost on me.',
+    'Preparedness is not a personality trait. Except it is mine.',
+    'I packed for weather. The weather did not show up.',
+    'Sunny skies, 82 degrees. Perfect raincoat weather.',
+    'You laugh now. But when the ship hits a wave, I will be ready.',
+    'I do not need an umbrella. I AM the umbrella.',
+  ],
+  'Biscuit':[
+    'Good boy. Questionable hiding skills.',
+    'I tried to play fetch with Jaws. He did not get the concept.',
+    'Someone scratched behind my ears yesterday. Best moment of the cruise.',
+    'I keep following people. They keep hiding me. Mixed signals.',
+    'Woof. Wait. Quack. I get confused.',
+    'I am a duck in a dog costume on a boat. Life is weird and beautiful.',
+    'Sit. Stay. Get hidden behind a fake plant. Good boy.',
+    'I heard someone say "who is a good boy" and I ran over. It was about their actual dog.',
+    'My tail would be wagging if I had one. And if I could move.',
+    'KRAKEN is huge. I could hide behind KRAKEN. Nobody would ever find me.',
+    'I do not fetch. That was a coincidence. TWICE was a coincidence.',
+  ],
+  'Luna':[
+    'Only comes out after dark. Or whenever, honestly.',
+    'The moon on my head is real. Do not ask how.',
+    'I prefer the quiet hours. After midnight. When the ship gets weird.',
+    'Astro keeps waving at me. I am the MOON, not a satellite.',
+    'I was hiding in a shadow. It was very on brand.',
+    'Stars do not shine in daylight. Neither do I. Theoretically.',
+    'Someone left me near a window at sunset. I have never felt more beautiful.',
+    'The night shift crew knows me by name. We have an understanding.',
+    'Moonlight becomes me. Fluorescent hallway lighting does not.',
+    'I am mysterious. That is not a personality flaw, it is a feature.',
+    'Do not put me in direct sunlight. I am nocturnal. By choice.',
+  ],
+  'Rosie':[
+    'ARRR you ready for this? Because I am always ready.',
+    'I am a pirate. On a cruise ship. Living my best life.',
+    'Scuba thinks the pool counts as the ocean. It does NOT.',
+    'I had a standoff with Tex. He blinked. I won.',
+    'Give me your loot. Just kidding. Give me a better hiding spot.',
+    'Ahoy! That is literally all I say and people love it.',
+    'The open sea is calling. I would answer but I have no phone.',
+    'I once saw land from the top deck. I did not care. Sea life forever.',
+    'Every duck for herself. That is the pirate code.',
+    'I have a bandana AND an attitude. Pick your battle.',
+    'Treasure is not gold. Treasure is being found by someone who smiles.',
+  ],
+  'Mango':[
+    'Tropical. Fruity. Judging your drink choices since day one.',
+    'Someone ordered a pina colada near me. I felt seen.',
+    'This headpiece is not a pineapple. It is a CROWN.',
+    'The pool bar is my office. I do not take meetings elsewhere.',
+    'Speedo keeps standing near me. I think he thinks I am a snack.',
+    'I am not high-maintenance. I am CORRECTLY maintained.',
+    'Fruity is not an insult. It is a lifestyle.',
+    'Someone put me near the salad bar. I have never been more offended.',
+    'My colors clash on purpose. It is called fashion.',
+    'If you are not drinking something tropical right now, why not?',
+    'I bring the island vibes. You bring the sunscreen.',
+  ],
+  'Shaggy':[
+    'Bad hair day, every day. Owning it since day one.',
+    'Mango keeps judging my hair. At least I HAVE hair.',
+    'A comb would not fix this. This is who I am.',
+    'Sparkle offered me a makeover. I offered her a reality check.',
+    'My hair is not messy. It is TEXTURED.',
+    'I woke up like this. Every single day. Because I cannot change.',
+    'The wind on the top deck was amazing. Did nothing to my hair. It is structural.',
+    'I am the before photo in every hair commercial. And I am proud.',
+    'Luna called my look "chaotic." I call it "lived in."',
+    'Some ducks have costumes. I have personality.',
+    'If I could move, I would headbang.',
+  ],
+  'Confetti':[
+    'I brought a balloon and a present. Neither are for you.',
+    'Every day is a party when you are made of fun.',
+    'Biscuit ate my cake. The WHOLE cake. We do not speak.',
+    'Luna was not invited to my party. Last time she dimmed ALL the lights.',
+    'I am always overdressed. That is not my problem, it is yours.',
+    'Someone put me next to a birthday celebration. I fit RIGHT in.',
+    'The hat stays on. Do not ask.',
+    'I threw a party on Deck 7. Nobody came. Their loss.',
+    'My balloon is decorative. Do not try to pop it. It is rubber. Like me.',
+    'Celebration is not what I do. It is what I AM.',
+    'You found me! That is worth celebrating. Get it? Because I am Confetti? Never mind.',
+  ],
+  'Scuba':[
+    'Goes deep. Literally and philosophically.',
+    'Puddles wears a raincoat on a cruise. Let that sink in.',
+    'I was built for the ocean. They put me in a hallway.',
+    'These goggles are prescription. Do not judge.',
+    'I have seen the bottom of the pool. It was mostly hair ties.',
+    'Jaws thinks we are related. We are NOT related.',
+    'The deep end is calling. I am not answering. I am rubber.',
+    'I am the most qualified duck on this ship. Formally trained.',
+    'Someone put me near the spa. Close enough to water. I will take it.',
+    'Astro goes to space. I go to the deep. Only one of us can breathe down there.',
+    'My snorkel is fully functional. My lungs are not. Because I do not have lungs.',
+  ],
+  'Sparkle':[
+    'Mythical. Magical. Probably should be in the spa right now.',
+    'A cowboy called me basic. A COWBOY. The audacity.',
+    'This horn is real. This mane is real. This attitude is VERY real.',
+    'I do not sparkle. I RADIATE.',
+    'OG is jealous and the whole ship knows it.',
+    'Being legendary is exhausting. Just kidding. It is fabulous.',
+    'Someone left me near a mirror. I stared at myself for 6 hours. Worth it.',
+    'Shaggy asked if my mane was real. I did not dignify that with a response.',
+    'Unicorns do not hide. We simply become temporarily invisible.',
+    'I make every hiding spot look glamorous.',
+    'If you found me, you are obviously a person of taste.',
+    'They say unicorns are not real. Explain THIS.',
+  ],
+  'Tex':[
+    'This deck ain\'t big enough for the both of us.',
+    'A cowboy\'s work is never done. Especially when someone keeps moving you.',
+    'I once stared at a towel animal for 3 hours. It blinked first.',
+    'The casino knows me by name. I owe it money.',
+    'Sparkle called me basic. I have a hat AND a bandana.',
+    'I do not always get found. But when I do, I tip my hat.',
+    'They do not make cowboys like they used to. They make them out of rubber now.',
+    'I left Texas for this. Best decision I never made.',
+    'The sunset from Deck 7 is beautiful. I cannot turn my head to see it, but I am told.',
+    'Rosie wants a rematch. She is not ready.',
+    'Out here on the open sea. A cowboy and his hat. That is all a duck needs.',
+    'Yeehaw is not just a word. It is a philosophy.',
+  ],
+  'TITANIC':[
+    'I am enormous. This is both an advantage and a problem.',
+    'Try hiding when you are the size of a small dog.',
+    'The little ducks look up to me. Literally. I am that big.',
+    'Axel said I cannot hide. I hid for 3 days once. THREE DAYS.',
+    'Being mythic is a lifestyle, not a title.',
+    'I take up an entire shelf. And I am not sorry.',
+    'Someone tried to put me in a potted plant. I AM bigger than the plant.',
+    'KRAKEN thinks he is the better mythic. He is wrong and he knows it.',
+    '100 points says you cannot hide me better than the last person.',
+    'I have been mistaken for a decoration. Twice. Both times I was offended.',
+    'You found a mythic duck. Tell everyone. EVERYONE.',
+    'Go big or go home. I cannot go home. So I went big.',
+  ],
+  'KRAKEN':[
+    'The ocean trembles when I quack. Allegedly.',
+    'TITANIC stole my hiding spot. Again.',
+    'The small ducks are cute. I could fit four of them in my beak.',
+    'People scream when they find me. I choose to believe it is excitement.',
+    'Being this large is both a gift and a curse. Mostly a gift.',
+    'I am mythic. You are holding a MYTH in your hands right now.',
+    'They named me KRAKEN. I did not get a vote.',
+    'Finding me is worth 100 points. Hiding me is worth a medal.',
+    'I do not fit behind things. Things fit behind ME.',
+    'Legend says if you find both mythic ducks, you win the cruise. I started that legend.',
+    'Somewhere on this ship, TITANIC is talking about me. I can feel it.',
+    'You look surprised. Everyone looks surprised. I am ENORMOUS.',
+  ],
+};
 function getDuckDialogue(duck){
-  const h=hoursSince(lastFoundTime(duck));
-  const ff=findingsForDuck(duck.id);
-  const lf=ff[0];
-  const loc=lf?lf.location:'somewhere';
-  const r=(duck.rarity||'').toLowerCase();
-  const lines=[];
-  if(ff.length===0){
-    lines.push('OH THANK GOODNESS. I thought I was going to spend the whole cruise behind a fake plant.');
-    lines.push('Finally! I was starting to think I was invisible.');
-    lines.push('You\'re my first! I\'ll never forget this moment.');
-  } else if(h>48){
-    lines.push('I\'ve been hiding for '+Math.floor(h)+' hours. PLEASE don\'t send me back there.');
-    lines.push('I was starting to grow barnacles. Thank you.');
-    lines.push('I thought everyone forgot about me. '+Math.floor(h)+' hours is a LONG time for a duck.');
-  } else if(h>24){
-    lines.push('Over a day behind the '+loc+'? That\'s cruel and unusual.');
-    lines.push('Do you know what it\'s like to stare at the same wall for '+Math.floor(h)+' hours?');
-    lines.push('I was THIS close to filing a complaint with guest services.');
-  } else if(h<2){
-    lines.push('That was fast! I barely got comfortable.');
-    lines.push('Already?! I just got here!');
-    lines.push('Wow, you\'re good at this. Or my hider was terrible.');
-  } else {
-    lines.push('You found me! I was getting cozy near the '+loc+'.');
-    lines.push('Nice work! I was starting to enjoy the view.');
-    lines.push('Took you '+Math.floor(h)+' hours but who\'s counting? Me. I was counting.');
-  }
-  if(r==='mythic'){
-    lines.push('You found ME? Do you know how rare I am?!');
-    lines.push('A MYTHIC duck in YOUR hands. Savor this moment.');
-  }
-  if(r==='legendary'){
-    lines.push('A legendary find! Quick, look casual.');
-  }
-  return lines[Math.floor(Math.random()*lines.length)];
+  const lines=DUCK_LINES[duck.name];
+  if(lines&&lines.length) return lines[Math.floor(Math.random()*lines.length)];
+  return 'Quack.';
 }
 
 // ── Bragging Rights ──
@@ -953,9 +1166,9 @@ function renderDuck(id){
       <div style="margin:10px 0;font-size:.95rem">${getDuckMood(duck).emoji} <strong>${esc(getDuckMood(duck).mood)}</strong> — ${esc(getDuckMood(duck).text)}</div>
       <div style="margin:12px 0">${bountyHTML(b)}</div>
     </div>
-    <div class="card" style="text-align:center;font-style:italic;font-size:.95rem;color:var(--teal-dark);line-height:1.5">
+    <div class="card reveal-delay" style="text-align:center;font-style:italic;font-size:.95rem;color:var(--teal-dark);line-height:1.5">
       "​${esc(getDuckDialogue(duck))}"
-      <div style="margin-top:8px;font-style:normal;font-size:.85rem;color:var(--muted)">${esc(getQuack(duck.name))}</div>
+      <div class="reveal-delay-2" style="margin-top:8px;font-style:normal;font-size:.85rem;color:var(--muted)">${esc(getQuack(duck.name))}</div>
     </div>
     ${getDuckGossip(duck.name)?`<div class="card" style="font-size:.85rem;color:var(--muted);font-style:italic;line-height:1.5">🤫 <em>${esc(getDuckGossip(duck.name))}</em></div>`:''}
     ${getFavoriteSpot(duck.name)?`<div style="text-align:center;font-size:.82rem;color:var(--muted);margin:4px 0 8px">📍 ${esc(getFavoriteSpot(duck.name))}</div>`:''}
