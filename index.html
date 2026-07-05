@@ -499,28 +499,139 @@ function getQuack(name){
   return q[name]||'Quack.';
 }
 
-// ── Duck Gossip ──
+// ── Duck Gossip (multiple lines, randomly picked) ──
 function getDuckGossip(name){
   const g={
-    'Astro':"Don't tell Jaws, but he thinks he's hiding better than he actually is.",
-    'Speedo':'Luna keeps saying she only comes out at night. I saw her at the buffet at noon.',
-    'Jaws':'Tex keeps bragging about the casino. Nobody cares, Tex.',
-    'OG':"Everyone's got costumes now. I was here first. Remember that.",
-    'Axel':"Sparkle thinks she's the star of the ship. I have a guitar.",
-    'Puddles':'Biscuit tried to fetch me yesterday. We do not talk about it.',
-    'Biscuit':'I tried to make friends with Jaws. He just... stared.',
-    'Luna':'Confetti threw a party last night. I was not invited.',
-    'Rosie':'Scuba thinks the pool counts as the ocean. It does not.',
-    'Mango':'Shaggy needs a comb. I have been saying this for days.',
-    'Shaggy':'Mango keeps judging my hair. At least I do not have a fruit on my head.',
-    'Confetti':'Astro keeps talking about space. We are on a boat.',
-    'Scuba':'Puddles wears a raincoat on a cruise ship. Think about that.',
-    'Sparkle':'Tex called me basic. A COWBOY called ME basic.',
-    'Tex':'Sparkle called me basic. I have a hat AND a bandana.',
-    'TITANIC':'KRAKEN thinks he is bigger. We are literally the same size.',
-    'KRAKEN':'TITANIC stole my hiding spot twice. TWICE.',
+    'Astro':[
+      "Don't tell Jaws, but he thinks he's hiding better than he actually is.",
+      'Tex says he invented cowboy hats. He did not.',
+      'OG is convinced costumes are a fad. Been saying it since day one.',
+      "Sparkle won't stop looking at herself in every window we pass.",
+    ],
+    'Speedo':[
+      'Luna keeps saying she only comes out at night. I saw her at the buffet at noon.',
+      'Jaws keeps following me around. I think he thinks I am food.',
+      'Puddles has a raincoat. On a cruise. In July.',
+      'Confetti invited everyone to a party except me. I have a swimsuit. I AM the party.',
+    ],
+    'Jaws':[
+      'Tex keeps bragging about the casino. Nobody cares, Tex.',
+      'Biscuit ran away from me. I was trying to say hi.',
+      'Astro thinks space is impressive. Try the OCEAN.',
+      'Speedo keeps flexing near the pool. We get it, dude.',
+    ],
+    'OG':[
+      "Everyone's got costumes now. I was here first. Remember that.",
+      'Sparkle has glitter. I have authenticity.',
+      'They call me basic. I call myself classic.',
+      'Axel thinks a guitar makes him cool. I do not need props.',
+    ],
+    'Axel':[
+      "Sparkle thinks she's the star of the ship. I have a guitar.",
+      'OG keeps calling himself a classic. That is just a fancy word for boring.',
+      'Scuba thinks he is deep. Bro, you have goggles.',
+      'TITANIC cannot even fit behind a plant. How is that a hiding strategy?',
+    ],
+    'Puddles':[
+      'Biscuit tried to fetch me yesterday. We do not talk about it.',
+      'Everyone makes fun of my raincoat. Who is laughing when it rains? ME.',
+      'Rosie thinks she is a pirate. She has never seen a real ship. Wait...',
+      'Mango smells tropical. I do not trust it.',
+    ],
+    'Biscuit':[
+      'I tried to make friends with Jaws. He just... stared.',
+      'Tex threw a stick. I did NOT fetch it. That was a coincidence.',
+      'Luna is mysterious. I just want to play.',
+      'KRAKEN is enormous. I could hide behind KRAKEN. Nobody would find me.',
+    ],
+    'Luna':[
+      'Confetti threw a party last night. I was not invited.',
+      'Astro keeps waving at me from across the deck. I am the MOON, not a satellite.',
+      'Shaggy asked to borrow a brush. I do not own a brush.',
+      'The stars on my body are real. Do not ask how.',
+    ],
+    'Rosie':[
+      'Scuba thinks the pool counts as the ocean. It does not.',
+      'Jaws thinks he is scary. I have a BANDANA. That is real power.',
+      'Tex and I had a standoff. I won. He denies it.',
+      'OG called me dramatic. Says the plain yellow duck.',
+    ],
+    'Mango':[
+      'Shaggy needs a comb. I have been saying this for days.',
+      'Speedo keeps standing near me. I think he thinks I am a snack.',
+      'Confetti is fun at parties. I AM the party.',
+      'Puddles judges my headpiece. She wears a RAINCOAT.',
+    ],
+    'Shaggy':[
+      'Mango keeps judging my hair. At least I do not have a fruit on my head.',
+      'Luna says I need a makeover. I say she needs to mind her business.',
+      'Sparkle offered me glitter. I said no. Twice.',
+      'My hair is not messy. It is TEXTURED.',
+    ],
+    'Confetti':[
+      'Astro keeps talking about space. We are on a boat.',
+      'I brought a balloon and a present. Neither are for you.',
+      'Luna was not invited to my party because last time she dimmed the lights.',
+      'Biscuit ate my cake. The WHOLE cake.',
+    ],
+    'Scuba':[
+      'Puddles wears a raincoat on a cruise ship. Think about that.',
+      'Jaws thinks we are related. We are NOT related.',
+      'Astro goes to space. I go to the deep. Only one of us can breathe down there.',
+      'Speedo thinks goggles are a personality. He is right but I said it first.',
+    ],
+    'Sparkle':[
+      'Tex called me basic. A COWBOY called ME basic.',
+      'Axel thinks a guitar competes with a horn and wings. Please.',
+      'OG is jealous and everyone knows it.',
+      'Shaggy asked if my mane was real. The AUDACITY.',
+    ],
+    'Tex':[
+      'Sparkle called me basic. I have a hat AND a bandana.',
+      'Rosie wants a standoff rematch. She is not ready.',
+      'Jaws tried to wear my hat. It did not fit. Good.',
+      'The casino is my territory. I do not make the rules.',
+    ],
+    'TITANIC':[
+      'KRAKEN thinks he is bigger. We are literally the same size.',
+      'The little ducks look up to me. Literally. I am enormous.',
+      'Axel said I cannot hide. I hid for 3 days once. THREE DAYS.',
+      'Being mythic is a lifestyle, not a title.',
+    ],
+    'KRAKEN':[
+      'TITANIC stole my hiding spot twice. TWICE.',
+      'The small ducks are cute. I could eat four of them. I would never. But I could.',
+      'People scream when they find me. I choose to believe it is excitement.',
+      'Being this large is both a gift and a curse. Mostly a gift.',
+    ],
   };
-  return g[name]||null;
+  const lines=g[name];
+  if(!lines)return null;
+  return lines[Math.floor(Math.random()*lines.length)];
+}
+
+// ── Favorite Hiding Place ──
+function getFavoriteSpot(name){
+  const spots={
+    'Astro':'Likes high places.',
+    'Speedo':'Never far from the pool.',
+    'Jaws':'Prefers to stay near water.',
+    'OG':'No preference. Goes wherever.',
+    'Axel':'Gravitates toward anything loud.',
+    'Puddles':'Avoids the sun. Obviously.',
+    'Biscuit':'Follows people around. Bad at hiding.',
+    'Luna':'Drawn to quiet corners.',
+    'Rosie':'Anywhere she can see the ocean.',
+    'Mango':'Near the drinks. Always.',
+    'Shaggy':'Wherever nobody will comment on his hair.',
+    'Confetti':'Anywhere festive.',
+    'Scuba':'Low decks. Closer to the waterline.',
+    'Sparkle':'Claims the spa is her natural habitat.',
+    'Tex':'Always ends up near a bar.',
+    'TITANIC':'Hard to miss. Harder to hide.',
+    'KRAKEN':'Behind the biggest thing he can find.',
+  };
+  return spots[name]||null;
 }
 
 // ── Easter Egg (1% chance) ──
@@ -847,6 +958,7 @@ function renderDuck(id){
       <div style="margin-top:8px;font-style:normal;font-size:.85rem;color:var(--muted)">${esc(getQuack(duck.name))}</div>
     </div>
     ${getDuckGossip(duck.name)?`<div class="card" style="font-size:.85rem;color:var(--muted);font-style:italic;line-height:1.5">🤫 <em>${esc(getDuckGossip(duck.name))}</em></div>`:''}
+    ${getFavoriteSpot(duck.name)?`<div style="text-align:center;font-size:.82rem;color:var(--muted);margin:4px 0 8px">📍 ${esc(getFavoriteSpot(duck.name))}</div>`:''}
     <div class="duck-stats">
       <div><span class="stat-val">${ff.length}</span>finds</div>
       <div><span class="stat-val">${uniqueLocations.size}</span>locations</div>
