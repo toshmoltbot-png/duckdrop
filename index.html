@@ -1,394 +1,920 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Find the Duckies!</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦆</text></svg>">
-  <style>
-    :root{--navy:#183050;--blue:#25486f;--yellow:#ffd700;--ink:#10233b;--paper:#fff8cf;--muted:#b7c5d8;--ok:#37d67a;--bad:#ff6b6b}
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--navy);color:white;min-height:100vh}
-    a{color:inherit;text-decoration:none}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Find the Duckies! 🦆</title>
+<meta name="description" content="17 rubber ducks hidden on a cruise ship. Find one, scan its QR code, log your find, re-hide it. The hunt is on!">
+<meta name="theme-color" content="#183050">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦆</text></svg>">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#183050;--bg2:#1e3a5f;--bg3:#244670;
+  --yellow:#FFD700;--white:#f0f0f0;--muted:#8aa4c0;
+  --common:#8B8B8B;--uncommon:#4CAF50;--rare:#2196F3;--legendary:#FF9800;--mythic:#E040FB;
+  --radius:14px;--shadow:0 4px 20px rgba(0,0,0,0.3);
+}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);color:var(--white);
+  min-height:100dvh;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--yellow);text-decoration:none}
+button{
+  font-family:inherit;cursor:pointer;border:none;
+  font-size:1rem;border-radius:var(--radius);
+  min-height:48px;padding:14px 24px;
+  transition:transform .12s,box-shadow .12s,background .2s;
+}
+button:active{transform:scale(0.97)}
+input,textarea,select{
+  font-family:inherit;font-size:1rem;
+  background:var(--bg);color:var(--white);
+  border:2px solid var(--bg3);border-radius:var(--radius);
+  padding:14px 16px;width:100%;min-height:48px;
+  transition:border-color .2s;
+}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--yellow)}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238aa4c0' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+textarea{resize:vertical;min-height:80px}
 
-    .top{background:rgba(24,48,80,.95);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.12);padding:14px 16px;text-align:center}
-    .brand{font-weight:900;font-size:26px;color:var(--yellow);letter-spacing:-.5px}
-    .tagline{color:var(--muted);font-size:13px;margin-top:2px}
+.container{max-width:480px;margin:0 auto;padding:16px 16px 100px}
 
-    .wrap{max-width:680px;margin:auto;padding:16px 14px 80px}
-    h2{font-size:22px;font-weight:900;margin:28px 0 12px;display:flex;align-items:center;gap:8px}
-    h2 .emoji{font-size:26px}
+/* Header */
+.header{text-align:center;padding:24px 0 8px}
+.header h1{font-size:2rem;color:var(--yellow);margin-bottom:4px;letter-spacing:-0.5px}
+.header .subtitle{color:var(--muted);font-size:0.85rem}
 
-    .ducks{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px}
-    .dcard{background:var(--paper);color:var(--ink);border-radius:10px;padding:12px;text-align:center;transition:transform .15s}
-    .dcard:active{transform:scale(.97)}
-    .dcard .icon{font-size:36px;line-height:1}
-    .dcard.super .icon{font-size:52px}
-    .dcard h3{font-size:14px;font-weight:800;margin:6px 0 2px}
-    .dcard .finds{font-size:12px;color:#666}
-    .dcard .spots{font-size:10px;color:#999;margin-top:2px}
-    .dcard.super{border:2px solid var(--yellow);background:linear-gradient(135deg,#fffbe6,#fff3b0)}
-    .dcard.super h3{color:#b8860b}
+/* Rarity badges */
+.badge{
+  display:inline-block;padding:3px 10px;border-radius:20px;
+  font-size:0.7rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.5px;color:#fff;
+}
+.badge-common{background:var(--common)}
+.badge-uncommon{background:var(--uncommon)}
+.badge-rare{background:var(--rare)}
+.badge-legendary{background:var(--legendary);color:#222}
+.badge-mythic{background:var(--mythic)}
 
-    .lb{list-style:none}
-    .lb li{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.1)}
-    .lb li:last-child{border:0}
-    .rank{width:32px;height:32px;border-radius:50%;background:var(--yellow);color:var(--ink);display:grid;place-items:center;font-weight:900;font-size:14px;flex-shrink:0}
-    .rank.g{background:linear-gradient(135deg,#ffd700,#ffaa00)}
-    .rank.s{background:linear-gradient(135deg,#c0c0c0,#e8e8e8)}
-    .rank.b{background:linear-gradient(135deg,#cd7f32,#daa060)}
-    .lb .name{font-weight:700;font-size:15px}
-    .lb .meta{color:var(--muted);font-size:12px}
-    .lb .pts{margin-left:auto;color:var(--yellow);font-weight:900;font-size:18px;flex-shrink:0}
+/* Cards */
+.card{
+  background:var(--bg2);border-radius:var(--radius);
+  padding:18px;margin-bottom:14px;
+  box-shadow:var(--shadow);
+  border:1px solid rgba(255,255,255,0.05);
+}
+.card-duck{cursor:pointer;transition:transform .15s,border-color .2s}
+.card-duck:active{transform:scale(0.98)}
 
-    /* Photo wall */
-    .photowall{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px}
-    .photowall img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px}
-    .photowall .pw-cap{position:relative}
-    .photowall .pw-name{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);color:white;font-size:9px;font-weight:700;padding:2px 4px;border-radius:0 0 8px 8px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+/* Bounty pulse */
+.bounty{font-weight:700;font-size:1.1rem;color:var(--yellow)}
+.bounty.hot{animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{
+  0%,100%{text-shadow:0 0 4px rgba(255,215,0,0.3)}
+  50%{text-shadow:0 0 16px rgba(255,215,0,0.8),0 0 30px rgba(255,100,0,0.4)}
+}
 
-    /* Most traveled */
-    .traveled{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
-    .traveled .tcard{background:#24456c;border-radius:10px;padding:12px 8px}
-    .traveled .tcard .tn{font-size:13px;font-weight:800;margin-bottom:4px}
-    .traveled .tcard b{font-size:20px;color:var(--yellow);display:block}
-    .traveled .tcard span{font-size:10px;color:var(--muted)}
+/* Buttons */
+.btn-primary{
+  background:var(--yellow);color:#1a1a2e;font-weight:700;
+  width:100%;font-size:1.15rem;
+  box-shadow:0 4px 15px rgba(255,215,0,0.3);
+}
+.btn-primary:hover{box-shadow:0 4px 25px rgba(255,215,0,0.5)}
+.btn-secondary{
+  background:transparent;color:var(--yellow);
+  border:2px solid var(--yellow);width:100%;font-weight:600;
+}
+.btn-skip{
+  background:transparent;color:var(--muted);
+  font-size:0.85rem;text-align:center;
+  min-height:auto;padding:10px;
+}
 
-    .hero{padding:20px 0 8px;text-align:center}
-    .hero .big-icon{font-size:72px;line-height:1}
-    .hero h1{font-size:32px;font-weight:950;margin:8px 0 4px;color:var(--yellow)}
-    .hero .sub{color:var(--muted);font-size:15px}
-    .hero .super-badge{display:inline-block;background:var(--yellow);color:var(--ink);font-weight:900;font-size:11px;padding:4px 10px;border-radius:99px;margin-top:6px;text-transform:uppercase;letter-spacing:.05em}
-    .hero .finder-count{font-size:18px;font-weight:800;margin-top:10px;color:var(--ok)}
+/* Difficulty buttons */
+.diff-group{display:flex;gap:8px;margin:8px 0}
+.diff-btn{
+  flex:1;padding:12px 8px;font-size:0.85rem;font-weight:600;
+  background:var(--bg);border:2px solid var(--bg3);
+  color:var(--muted);text-align:center;
+  transition:all .2s;
+}
+.diff-btn.active{border-color:var(--yellow);color:var(--yellow);background:rgba(255,215,0,0.08)}
 
-    .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
-    .stat{background:#24456c;border-radius:10px;padding:12px;text-align:center}
-    .stat b{font-size:22px;color:var(--yellow);display:block}
-    .stat span{font-size:12px;color:var(--muted)}
+/* Grid */
+.duck-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid-card{
+  background:var(--bg2);border-radius:var(--radius);
+  padding:14px;text-align:center;cursor:pointer;
+  border:2px solid transparent;
+  box-shadow:var(--shadow);transition:transform .15s,border-color .2s;
+  position:relative;overflow:hidden;
+}
+.grid-card:active{transform:scale(0.97)}
+.grid-card .duck-emoji{font-size:2.2rem;margin-bottom:6px;display:block}
+.grid-card .duck-name{font-weight:700;font-size:0.9rem;margin-bottom:4px}
+.grid-card .duck-meta{color:var(--muted);font-size:0.72rem;margin-top:4px}
+.grid-card .found-check{
+  position:absolute;top:8px;right:8px;
+  font-size:1.2rem;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.5));
+}
+.grid-card[data-rarity="common"]{border-color:rgba(139,139,139,0.3)}
+.grid-card[data-rarity="uncommon"]{border-color:rgba(76,175,80,0.3)}
+.grid-card[data-rarity="rare"]{border-color:rgba(33,150,243,0.3)}
+.grid-card[data-rarity="legendary"]{border-color:rgba(255,152,0,0.4)}
+.grid-card[data-rarity="mythic"]{border-color:rgba(224,64,251,0.4)}
 
-    .panel{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:16px;margin:16px 0}
-    .panel h2{margin:0 0 12px;font-size:18px}
-    label{display:block;font-weight:700;font-size:13px;margin:10px 0 4px;color:var(--muted)}
-    input,select,textarea{width:100%;border:0;border-radius:8px;padding:12px;background:white;color:var(--ink);font-size:15px;min-height:44px}
-    textarea{min-height:70px;resize:vertical}
-    .btn{display:block;width:100%;border:0;border-radius:10px;background:var(--yellow);color:var(--ink);padding:14px;font-weight:900;font-size:16px;cursor:pointer;margin-top:14px;min-height:48px}
-    .btn:disabled{opacity:.5}
-    .btn.back{background:#24456c;color:white;font-size:14px;margin:16px 0 0;padding:12px}
-    .btn.rehide{background:var(--ok);color:white;margin-top:10px}
+/* Leaderboard */
+.lb-row{
+  display:flex;align-items:center;padding:12px 0;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.lb-row:last-child{border-bottom:none}
+.lb-rank{font-size:1.3rem;font-weight:800;width:36px;color:var(--yellow);text-align:center}
+.lb-rank.gold{color:#FFD700}.lb-rank.silver{color:#C0C0C0}.lb-rank.bronze{color:#CD7F32}
+.lb-info{flex:1;margin-left:10px}
+.lb-name{font-weight:700;font-size:0.95rem}
+.lb-stats{color:var(--muted);font-size:0.78rem}
+.lb-pts{font-weight:800;font-size:1.1rem;color:var(--yellow)}
 
-    /* Re-hide prompt */
-    .rehide-box{background:linear-gradient(135deg,#1f5a45,#24705a);border:2px solid var(--ok);border-radius:12px;padding:20px;margin:16px 0;text-align:center}
-    .rehide-box h3{font-size:20px;margin-bottom:8px}
-    .rehide-box p{font-size:14px;color:#b0e8c8;margin-bottom:12px}
-    .rehide-box .steps{text-align:left;font-size:13px;line-height:1.8;color:#d0f0e0}
+/* Activity feed */
+.feed-item{
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);
+  font-size:0.88rem;line-height:1.4;
+}
+.feed-item:last-child{border-bottom:none}
+.feed-time{color:var(--muted);font-size:0.75rem}
+.feed-cold{color:#ff6b6b}
 
-    .passport{list-style:none;margin:12px 0 0}
-    .passport li{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);align-items:center}
-    .passport li:last-child{border:0}
-    .stamp{width:28px;height:28px;border-radius:50%;background:var(--yellow);color:var(--ink);display:grid;place-items:center;font-weight:900;font-size:12px;flex-shrink:0}
-    .passport .pname{font-weight:700;font-size:14px}
-    .passport .pmeta{color:var(--muted);font-size:12px}
-    .passport .photo{width:48px;height:48px;object-fit:cover;border-radius:8px;margin-left:auto;flex-shrink:0}
+/* Passport log */
+.passport{margin-top:16px}
+.passport-entry{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.passport-entry:last-child{border-bottom:none}
+.passport-num{
+  background:var(--bg3);color:var(--yellow);
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;font-weight:700;flex-shrink:0;margin-top:2px;
+}
+.passport-detail{flex:1;font-size:0.85rem;line-height:1.4}
+.passport-detail strong{color:var(--yellow)}
+.passport-detail .meta{color:var(--muted);font-size:0.75rem}
 
-    .msg{padding:12px;border-radius:8px;margin:12px 0;font-weight:600;font-size:14px}
-    .msg.ok{background:#1f5a45;color:#d7ffe7}
-    .msg.err{background:#512337;color:#ffd8e2}
-    .empty{text-align:center;color:var(--muted);padding:24px 10px;font-size:14px}
+/* Photo grid */
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.photo-grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer}
 
-    #confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9}
-    .conf{position:absolute;top:-12px;font-size:22px;animation:fall 1.8s linear forwards}
-    @keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.2}}
+/* Hiding spot photo */
+.hide-photo{width:100%;max-height:240px;object-fit:cover;border-radius:var(--radius);margin:10px 0}
 
-    .foot{text-align:center;color:var(--muted);font-size:11px;padding:32px 0 16px;opacity:.6}
-  </style>
+/* Sections */
+.section{margin-top:28px}
+.section-title{
+  font-size:1.1rem;font-weight:700;margin-bottom:12px;
+  color:var(--yellow);display:flex;align-items:center;gap:8px;
+}
+
+/* Duck detail page */
+.duck-hero{text-align:center;padding:24px 0 8px}
+.duck-hero .emoji{font-size:4.5rem;display:block;margin-bottom:4px}
+.duck-hero .name{font-size:1.8rem;font-weight:800;color:var(--yellow);margin-bottom:6px}
+.duck-hero .bio{color:var(--muted);font-style:italic;font-size:0.9rem;margin:6px 0 10px}
+.duck-stats{
+  display:flex;justify-content:center;gap:24px;margin:14px 0;
+  color:var(--muted);font-size:0.82rem;
+}
+.duck-stats .stat-val{font-size:1.3rem;font-weight:800;color:var(--white);display:block}
+
+/* Hint box */
+.hint-box{
+  background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);
+  border-radius:var(--radius);padding:14px;margin:12px 0;
+}
+.hint-box .hint-label{font-size:0.75rem;color:var(--yellow);font-weight:700;text-transform:uppercase;margin-bottom:4px}
+.hint-box .hint-text{font-size:0.95rem;line-height:1.4}
+
+/* Find flow steps */
+.step{display:none}
+.step.active{display:block}
+
+/* Celebration */
+.celebration{text-align:center;padding:20px 0}
+.celebration .big-emoji{font-size:5rem;display:block;animation:bounce .6s ease}
+.celebration .congrats{font-size:1.6rem;font-weight:800;color:var(--yellow);margin:10px 0 4px}
+.celebration .points-earned{font-size:1.2rem;color:var(--yellow);margin-bottom:16px}
+@keyframes bounce{
+  0%{transform:scale(0.3) rotate(-20deg);opacity:0}
+  50%{transform:scale(1.15) rotate(5deg)}
+  100%{transform:scale(1) rotate(0deg)}
+}
+
+/* Form groups */
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:0.82rem;color:var(--muted);margin-bottom:5px;font-weight:600}
+.form-group .bonus{color:var(--uncommon);font-size:0.75rem;font-weight:600}
+
+/* Photo upload */
+.photo-upload{
+  position:relative;overflow:hidden;
+  background:var(--bg);border:2px dashed var(--bg3);
+  border-radius:var(--radius);padding:20px;text-align:center;
+  color:var(--muted);font-size:0.85rem;cursor:pointer;
+  min-height:48px;transition:border-color .2s;
+}
+.photo-upload:hover{border-color:var(--yellow)}
+.photo-upload input{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  opacity:0;cursor:pointer;
+}
+.photo-upload .preview{max-width:100%;max-height:200px;border-radius:8px;margin-top:8px}
+
+/* Confetti canvas */
+#confetti-canvas{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:9999;
+}
+
+/* Lightbox */
+.lightbox{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.92);z-index:9998;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;cursor:pointer;
+}
+.lightbox img{max-width:100%;max-height:90vh;border-radius:8px;object-fit:contain}
+
+/* Footer */
+.footer{
+  text-align:center;padding:30px 0 20px;
+  color:var(--muted);font-size:0.75rem;
+}
+
+/* Back button */
+.back-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  color:var(--muted);font-size:0.88rem;padding:8px 0;
+  background:none;border:none;min-height:44px;cursor:pointer;
+}
+
+/* Loading */
+.loading{text-align:center;padding:40px 0;color:var(--muted)}
+.spinner{
+  display:inline-block;width:32px;height:32px;
+  border:3px solid var(--bg3);border-top-color:var(--yellow);
+  border-radius:50%;animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Transitions */
+.fade-in{animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Image modal */
+.img-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.92);z-index:9998;align-items:center;justify-content:center;padding:20px}
+.img-modal.open{display:flex}
+.img-modal img{max-width:100%;max-height:90vh;border-radius:8px;object-fit:contain}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:#333;color:#fff;padding:12px 24px;border-radius:30px;
+  font-size:0.85rem;z-index:10000;
+  animation:toastIn .3s ease,toastOut .3s ease 2.7s forwards;
+}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes toastOut{from{opacity:1}to{opacity:0}}
+</style>
 </head>
 <body>
-  <header class="top">
-    <div class="brand">🦆 Find the Duckies!</div>
-    <div class="tagline">Scan a duck. Stamp its passport. Re-hide it. Climb the leaderboard.</div>
-  </header>
-  <main class="wrap" id="app"><div class="empty">Loading...</div></main>
-  <div id="confetti"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-  const SUPABASE_URL='https://udzuqfzbynyxlugxwhyx.supabase.co';
-  const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkenVxZnpieW55eGx1Z3h3aHl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMDE5NzUsImV4cCI6MjA5ODc3Nzk3NX0.b2vI7soo5h8ZDvy3lzfikC71xOToWqqISdPIg0zVycI';
-  const LOCATIONS=['Pool Deck','Lido Deck','Casino','Buffet','Bar','Lobby','Elevator','Cabin Hallway','Theater','Gym','Spa','Kids Club','Dining Room','Stairwell','Library','Sports Deck','Promenade','Other'];
-  const app=document.getElementById('app');
-  const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-  let ducks=[],findings=[];
+<canvas id="confetti-canvas"></canvas>
+<div id="app" class="container"></div>
 
-  function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-  function time(t){return t?new Date(t).toLocaleString([],{dateStyle:'short',timeStyle:'short'}):''}
-  function ordinal(n){const s=['th','st','nd','rd'];const v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])}
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+// ── Config ──
+const SUPABASE_URL = 'https://udzuqfzbynyxlugxwhyx.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkenVxZnpieW55eGx1Z3h3aHl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMDE5NzUsImV4cCI6MjA5ODc3Nzk3NX0.b2vI7soo5h8ZDvy3lzfikC71xOToWqqISdPIg0zVycI';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  async function loadData(){
-    const[d,f]=await Promise.all([
-      sb.from('ducks').select('*').order('created_at'),
-      sb.from('findings').select('*').order('found_at',{ascending:false})
-    ]);
-    if(d.error||f.error) throw d.error||f.error;
-    ducks=d.data||[];findings=f.data||[];
-  }
+const LOCATIONS = [
+  'Pool Deck','Lido Deck','Casino','Buffet','Bar','Lobby','Elevator',
+  'Cabin Hallway','Theater','Gym','Spa','Kids Club','Dining Room',
+  'Stairwell','Library','Sports Deck','Promenade','Other'
+];
 
-  function count(id){return findings.filter(f=>f.duck_id===id).length}
-  function uniqueSpots(id){return new Set(findings.filter(f=>f.duck_id===id).map(f=>f.location)).size}
-  function lastSpot(id){const f=findings.find(f=>f.duck_id===id);return f?f.location:'Hidden'}
-  function isSuper(d){return d.description?.includes('[SUPER]')}
-  function cleanDesc(d){return(d.description||'').replace('[SUPER]','').trim()}
+const RARITY_PTS = {common:10,uncommon:20,rare:35,legendary:50,mythic:100};
+const RARITY_COLORS = {common:'#8B8B8B',uncommon:'#4CAF50',rare:'#2196F3',legendary:'#FF9800',mythic:'#E040FB'};
 
-  addEventListener('hashchange',route);
-  addEventListener('load',route);
+// ── Helpers ──
+function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function timeAgo(d){
+  const s=Math.floor((Date.now()-new Date(d).getTime())/1000);
+  if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m ago';
+  if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';
+}
+function hoursSince(d){return(Date.now()-new Date(d).getTime())/3600000}
 
-  async function route(){
-    const hash=location.hash||'';
-    app.innerHTML='<div class="empty">Loading ducks...</div>';
-    try{await loadData()}catch(e){app.innerHTML='<div class="msg err">Could not load. Check your connection and try again.</div>';return}
-    const m=hash.match(/#\/duck\/(.+)/);
-    if(m) return duckPage(m[1]);
-    homePage();
-  }
+function calcBounty(rarity,lastFoundOrCreated){
+  const base=RARITY_PTS[rarity]||10;
+  const h=hoursSince(lastFoundOrCreated);
+  let mult=1;
+  if(h>=72)mult=5;else if(h>=48)mult=3;else if(h>=24)mult=2;
+  return{pts:base*mult,mult,base,hours:h};
+}
 
-  // === SCORING ===
-  // 1 point per find, 2 bonus points for re-hiding (every find after the first on any duck = someone re-hid it)
-  function buildLeaderboard(){
-    const m={};
-    findings.forEach(f=>{
-      const k=(f.finder_name||'').trim();
-      if(!k)return;
-      if(!m[k])m[k]={name:k,finds:0,points:0,last:f.found_at};
-      m[k].finds++;
-      m[k].points+=3; // 1 for find + 2 for re-hide (you found AND will re-hide)
-      if(new Date(f.found_at)>new Date(m[k].last))m[k].last=f.found_at;
+function duckEmoji(duck){
+  const r=(duck.rarity||'').toLowerCase();
+  const isSuper=r==='mythic'||(duck.description&&duck.description.includes('[SUPER]'));
+  return isSuper?'👑🦆':'🦆';
+}
+
+function badgeHTML(rarity){
+  const r=(rarity||'common').toLowerCase();
+  return`<span class="badge badge-${r}">${esc(r)}</span>`;
+}
+
+function bountyHTML(bounty){
+  const hot=bounty.mult>1;
+  let t=`${bounty.pts} pts`;
+  if(hot)t=`🔥 BOUNTY: ${bounty.pts} pts — unfound ${Math.floor(bounty.hours)}h!`;
+  return`<span class="bounty${hot?' hot':''}">${t}</span>`;
+}
+
+// localStorage found tracking
+function getMyFinds(){try{return JSON.parse(localStorage.getItem('ducky_finds')||'[]')}catch{return[]}}
+function addMyFind(duckId,name,pts){
+  const f=getMyFinds();
+  if(!f.find(x=>x.id===duckId))f.push({id:duckId,name,pts,at:Date.now()});
+  localStorage.setItem('ducky_finds',JSON.stringify(f));
+}
+function iFoundThis(duckId){return getMyFinds().some(x=>x.id===duckId)}
+
+// Photo compression
+function compressPhoto(file){
+  return new Promise((resolve)=>{
+    const reader=new FileReader();
+    reader.onload=(e)=>{
+      const img=new Image();
+      img.onload=()=>{
+        const canvas=document.createElement('canvas');
+        let w=img.width,h=img.height;
+        if(w>800){h=Math.round(h*(800/w));w=800}
+        if(h>800){w=Math.round(w*(800/h));h=800}
+        canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext('2d');
+        ctx.drawImage(img,0,0,w,h);
+        canvas.toBlob(resolve,'image/jpeg',0.7);
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadPhoto(blob,prefix){
+  const name=`${prefix}_${Date.now()}.jpg`;
+  const{data,error}=await sb.storage.from('duck-photos').upload(name,blob,{contentType:'image/jpeg',upsert:false});
+  if(error)throw error;
+  const{data:pub}=sb.storage.from('duck-photos').getPublicUrl(name);
+  return pub.publicUrl;
+}
+
+// Toast
+function toast(msg){
+  const el=document.createElement('div');el.className='toast';el.textContent=msg;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),3200);
+}
+
+// ── Confetti ──
+function fireConfetti(){
+  const canvas=document.getElementById('confetti-canvas');
+  const ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  const emojis=['🦆','⭐','🎉','👑','✨','💛'];
+  const particles=[];
+  for(let i=0;i<60;i++){
+    particles.push({
+      x:canvas.width/2+(Math.random()-0.5)*200,
+      y:canvas.height*0.4,
+      vx:(Math.random()-0.5)*12,
+      vy:-Math.random()*18-5,
+      emoji:emojis[Math.floor(Math.random()*emojis.length)],
+      size:16+Math.random()*20,
+      rot:Math.random()*360,
+      rotV:(Math.random()-0.5)*10,
+      life:1
     });
-    return Object.values(m).sort((a,b)=>b.points-a.points||new Date(b.last)-new Date(a.last));
   }
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    let alive=false;
+    for(const p of particles){
+      if(p.life<=0)continue;alive=true;
+      p.x+=p.vx;p.vy+=0.4;p.y+=p.vy;
+      p.rot+=p.rotV;p.life-=0.008;
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);
+      ctx.globalAlpha=Math.min(1,p.life*2);
+      ctx.font=`${p.size}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(p.emoji,0,0);ctx.restore();
+    }
+    if(alive&&frame<180){frame++;requestAnimationFrame(draw)}
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
 
-  function getMostTraveled(){
-    const m={};
-    ducks.forEach(d=>{
-      const spots=new Set(findings.filter(f=>f.duck_id===d.id).map(f=>f.location).filter(Boolean));
-      m[d.id]={name:d.name,spots:spots.size,super:isSuper(d)};
+// ── Lightbox ──
+function openLightbox(src){
+  const lb=document.createElement('div');lb.className='lightbox';
+  lb.innerHTML=`<img src="${esc(src)}" alt="Photo">`;
+  lb.onclick=()=>lb.remove();
+  document.body.appendChild(lb);
+}
+
+// ── Data Layer ──
+let allDucks=[];
+let allFindings=[];
+
+async function loadData(){
+  const[dRes,fRes]=await Promise.all([
+    sb.from('ducks').select('*').order('created_at'),
+    sb.from('findings').select('*').order('found_at',{ascending:false})
+  ]);
+  allDucks=dRes.data||[];
+  allFindings=fRes.data||[];
+}
+
+function findingsForDuck(duckId){return allFindings.filter(f=>f.duck_id===duckId)}
+function lastFinding(duckId){
+  const ff=findingsForDuck(duckId);
+  return ff.length?ff[0]:null;
+}
+function lastFoundTime(duck){
+  const lf=lastFinding(duck.id);
+  return lf?lf.found_at:duck.created_at;
+}
+
+// ── Leaderboard calc ──
+function calcLeaderboard(){
+  const board={};
+  for(const f of allFindings){
+    const duck=allDucks.find(d=>d.id===f.duck_id);
+    if(!duck)continue;
+    const name=f.finder_name||'Anonymous';
+    if(!board[name])board[name]={name,pts:0,ducks:0};
+    // Calculate bounty at time of find
+    const prevFindings=allFindings.filter(x=>x.duck_id===f.duck_id&&new Date(x.found_at)<new Date(f.found_at));
+    const lastTime=prevFindings.length?prevFindings[0].found_at:duck.created_at;
+    const b=calcBounty(duck.rarity,lastTime);
+    let pts=b.pts;
+    if(f.hint)pts+=5;
+    if(f.hide_photo_url)pts+=10;
+    board[name].pts+=pts;
+    board[name].ducks++;
+  }
+  return Object.values(board).sort((a,b)=>b.pts-a.pts);
+}
+
+// ── Activity Feed ──
+function buildFeed(){
+  const items=[];
+  // Recent finds
+  const recent=allFindings.slice(0,10);
+  for(const f of recent){
+    const duck=allDucks.find(d=>d.id===f.duck_id);
+    if(!duck)continue;
+    items.push({
+      type:'find',
+      time:new Date(f.found_at),
+      html:`${duckEmoji(duck)} <strong>${esc(duck.name)}</strong> was found at ${esc(f.location||'unknown')}! <span class="feed-time">${timeAgo(f.found_at)}</span>`
     });
-    return Object.values(m).sort((a,b)=>b.spots-a.spots).slice(0,3);
+  }
+  // Cold ducks (unfound >12h)
+  for(const duck of allDucks){
+    const h=hoursSince(lastFoundTime(duck));
+    if(h>12){
+      items.push({
+        type:'cold',
+        time:new Date(Date.now()-h*3600000),
+        html:`${duckEmoji(duck)} <strong class="feed-cold">${esc(duck.name)}</strong> hasn't been seen in ${Math.floor(h)} hours... <span class="feed-time">still hiding</span>`
+      });
+    }
+  }
+  items.sort((a,b)=>b.time-a.time);
+  return items.slice(0,8);
+}
+
+// ── Routing ──
+function getRoute(){
+  const h=location.hash||'#/';
+  const m=h.match(/^#\/duck\/(.+)/);
+  if(m)return{page:'duck',id:m[1]};
+  return{page:'home'};
+}
+
+// ── Render ──
+const app=document.getElementById('app');
+
+async function render(){
+  const route=getRoute();
+  app.innerHTML='<div class="loading"><div class="spinner"></div><p style="margin-top:12px">Loading ducks...</p></div>';
+  try{await loadData()}catch(e){
+    app.innerHTML=`<div class="loading"><p>⚠️ Couldn't load data. Check your connection.</p></div>`;
+    return;
+  }
+  if(route.page==='duck')renderDuck(route.id);
+  else renderHome();
+}
+
+// ── HOME PAGE ──
+function renderHome(){
+  const feed=buildFeed();
+  const lb=calcLeaderboard();
+  const myFinds=getMyFinds();
+
+  // Photo collection
+  const photos=allFindings.filter(f=>f.photo_url).slice(0,9);
+
+  let html=`
+    <div class="header fade-in">
+      <h1>🦆 Find the Duckies!</h1>
+      <div class="subtitle">Boston to Bermuda · Norwegian · July 5–12, 2026</div>
+    </div>
+    <p style="text-align:center;color:var(--muted);font-size:0.88rem;margin:10px 0 0;line-height:1.5">
+      17 ducks are hidden on this ship. Find one, scan its QR code, re-hide it. The hunt is on.
+    </p>
+  `;
+
+  // Activity Feed
+  if(feed.length){
+    html+=`<div class="section"><div class="section-title">📡 Live Activity</div>`;
+    for(const item of feed){
+      html+=`<div class="feed-item">${item.html}</div>`;
+    }
+    html+=`</div>`;
   }
 
-  function homePage(){
-    const minis=ducks.filter(d=>!isSuper(d));
-    const supers=ducks.filter(d=>isSuper(d));
-    const lb=buildLeaderboard();
-    const traveled=getMostTraveled();
-    const photos=findings.filter(f=>f.photo_url).slice(0,12);
+  // The Fleet
+  html+=`<div class="section"><div class="section-title">🦆 The Fleet</div><div class="duck-grid">`;
+  for(const duck of allDucks){
+    const ff=findingsForDuck(duck.id);
+    const b=calcBounty(duck.rarity,lastFoundTime(duck));
+    const found=iFoundThis(duck.id);
+    const lf=lastFinding(duck.id);
+    const lastSeen=lf?timeAgo(lf.found_at):'Still hiding...';
+    const rarityColor=RARITY_COLORS[(duck.rarity||'common').toLowerCase()]||'#8B8B8B';
 
-    let html='';
+    html+=`
+      <div class="grid-card" data-rarity="${esc(duck.rarity||'common')}" onclick="location.hash='#/duck/${duck.id}'">
+        ${found?'<span class="found-check">✅</span>':''}
+        <span class="duck-emoji">${duckEmoji(duck)}</span>
+        <div class="duck-name">${esc(duck.name)}</div>
+        ${badgeHTML(duck.rarity)}
+        <div style="margin-top:6px">${bountyHTML(b)}</div>
+        <div class="duck-meta">${ff.length} find${ff.length!==1?'s':''} · ${lastSeen}</div>
+      </div>
+    `;
+  }
+  html+=`</div></div>`;
 
-    // Super ducks
-    if(supers.length){
-      html+=`<h2><span class="emoji">👑</span> Super Ducks</h2>
-        <div class="ducks">${supers.map(d=>`
-          <a class="dcard super" href="#/duck/${d.id}">
-            <div class="icon">🦆</div>
-            <h3>${esc(d.name)}</h3>
-            <div class="finds">${count(d.id)} finds</div>
-            <div class="spots">${uniqueSpots(d.id)} locations visited</div>
-          </a>`).join('')}</div>`;
-    }
-
-    // Mini ducks
-    html+=`<h2><span class="emoji">🦆</span> Ducks</h2>
-      <div class="ducks">${minis.map(d=>`
-        <a class="dcard" href="#/duck/${d.id}">
-          <div class="icon">🦆</div>
-          <h3>${esc(d.name)}</h3>
-          <div class="finds">${count(d.id)} finds</div>
-          <div class="spots">${uniqueSpots(d.id)} locations</div>
-        </a>`).join('')}</div>`;
-
-    // Most traveled
-    if(traveled.some(t=>t.spots>0)){
-      html+=`<h2><span class="emoji">🗺</span> Most Traveled</h2>
-        <div class="traveled">${traveled.map(t=>`
-          <div class="tcard">
-            <div class="tn">${t.super?'👑 ':''}${esc(t.name)}</div>
-            <b>${t.spots}</b>
-            <span>locations</span>
-          </div>`).join('')}</div>`;
-    }
-
-    // Leaderboard
-    html+=`<h2><span class="emoji">🏆</span> Leaderboard</h2>`;
-    if(lb.length){
-      html+=`<ol class="lb">${lb.map((r,i)=>{
-        const cls=i===0?'g':i===1?'s':i===2?'b':'';
-        return `<li><span class="rank ${cls}">${i+1}</span><div><div class="name">${esc(r.name)}</div><div class="meta">${r.finds} duck${r.finds===1?'':'s'} found</div></div><div class="pts">${r.points} pts</div></li>`;
-      }).join('')}</ol>`;
-    } else {
-      html+='<div class="empty">No finds yet. Scan a duck to be first!</div>';
-    }
-
-    // Photo wall
-    if(photos.length){
-      html+=`<h2><span class="emoji">📸</span> Recent Finds</h2>
-        <div class="photowall">${photos.map(f=>{
-          const d=ducks.find(x=>x.id===f.duck_id);
-          return `<div class="pw-cap"><img src="${esc(f.photo_url)}" alt="" loading="lazy"><div class="pw-name">${esc(f.finder_name)}</div></div>`;
-        }).join('')}</div>`;
-    }
-
-    html+='<div class="foot">FindtheDuckies.com</div>';
-    app.innerHTML=html;
+  // Leaderboard
+  if(lb.length){
+    html+=`<div class="section"><div class="section-title">🏆 Leaderboard</div>`;
+    lb.slice(0,15).forEach((p,i)=>{
+      const rc=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+      html+=`
+        <div class="lb-row">
+          <div class="lb-rank ${rc}">${i+1}</div>
+          <div class="lb-info">
+            <div class="lb-name">${esc(p.name)}</div>
+            <div class="lb-stats">${p.ducks} duck${p.ducks!==1?'s':''} found</div>
+          </div>
+          <div class="lb-pts">${p.pts}</div>
+        </div>
+      `;
+    });
+    html+=`</div>`;
   }
 
-  function duckPage(id){
-    const d=ducks.find(x=>x.id===id);
-    if(!d){app.innerHTML='<div class="msg err">Duck not found.</div><a class="btn back" href="#/">Back to all ducks</a>';return}
-    const fs=findings.filter(f=>f.duck_id===id).sort((a,b)=>new Date(b.found_at)-new Date(a.found_at));
-    const sup=isSuper(d);
-    const desc=cleanDesc(d);
-    const n=fs.length;
-    const spots=uniqueSpots(id);
-
-    app.innerHTML=`
-      <div class="hero">
-        <div class="big-icon">${sup?'👑🦆':'🦆'}</div>
-        <h1>${esc(d.name)}</h1>
-        <div class="sub">Hidden by ${esc(d.hidden_by)}</div>
-        ${sup?'<div class="super-badge">Super Duck</div>':''}
-        ${desc?`<div class="sub" style="margin-top:8px">${esc(desc)}</div>`:''}
-        <div class="finder-count">${n>0?`🎉 You're the ${ordinal(n+1)} person to find this duck!`:'🎉 You\'re the FIRST person to find this duck!'}</div>
-      </div>
-
-      <div class="stats">
-        <div class="stat"><b>${n}</b><span>passport stamps</span></div>
-        <div class="stat"><b>${spots}</b><span>locations visited</span></div>
-      </div>
-
-      <div class="panel">
-        <h2>🎉 You found me!</h2>
-        <form id="findForm">
-          <label>Your name</label>
-          <input name="finder_name" maxlength="40" required placeholder="What should we call you?">
-          <label>Where did you find this duck?</label>
-          <select name="location">${LOCATIONS.map(l=>`<option>${l}</option>`).join('')}</select>
-          <label>Snap a photo (optional)</label>
-          <input name="photo" type="file" accept="image/*" capture="environment">
-          <button class="btn" type="submit">Stamp the Passport 🦆</button>
-        </form>
-      </div>
-
-      <div class="panel">
-        <h2>📜 Duck Passport</h2>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:8px">Every finder, every location. This duck's journey across the ship.</p>
-        ${fs.length?`<ol class="passport">${fs.map((f,i)=>`
-          <li>
-            <span class="stamp">${fs.length-i}</span>
-            <div>
-              <div class="pname">${esc(f.finder_name)}</div>
-              <div class="pmeta">${esc(f.location||'Somewhere onboard')} · ${time(f.found_at)}</div>
-            </div>
-            ${f.photo_url?`<img class="photo" src="${esc(f.photo_url)}" alt="">`:''}
-          </li>`).join('')}</ol>`:'<div class="empty">No stamps yet. You\'re about to be the first!</div>'}
-      </div>
-
-      <a class="btn back" href="#/">← All Ducks & Leaderboard</a>
-      <div class="foot">FindtheDuckies.com</div>`;
-
-    document.getElementById('findForm').onsubmit=e=>submitFind(e,d.id);
+  // Recent photos
+  if(photos.length){
+    html+=`<div class="section"><div class="section-title">📸 Recent Photos</div><div class="photo-grid">`;
+    for(const f of photos){
+      html+=`<img src="${esc(f.photo_url)}" alt="Duck find photo" loading="lazy" onclick="openLightbox('${esc(f.photo_url)}')">`;
+    }
+    html+=`</div></div>`;
   }
 
-  async function submitFind(e,duck_id){
-    e.preventDefault();
-    const fd=new FormData(e.target),btn=e.target.querySelector('button');
-    btn.disabled=true;btn.textContent='Stamping...';
-    let photo_url=null,file=fd.get('photo');
+  html+=`<div class="footer">FindtheDuckies.com · Boston to Bermuda 2026</div>`;
+  app.innerHTML=html;
+  app.querySelector('.header').scrollIntoView({behavior:'auto'});
+}
+
+// ── DUCK PAGE ──
+function renderDuck(id){
+  const duck=allDucks.find(d=>d.id===id);
+  if(!duck){app.innerHTML=`<div class="loading"><p>Duck not found 🦆💨</p><br><a href="#/">← Back to all ducks</a></div>`;return}
+
+  const ff=findingsForDuck(duck.id);
+  const lf=ff[0]||null;
+  const b=calcBounty(duck.rarity,lastFoundTime(duck));
+  const uniqueLocations=new Set(ff.map(f=>f.location).filter(Boolean));
+  const found=iFoundThis(duck.id);
+
+  let html=`
+    <button class="back-btn" onclick="location.hash='#/'">← All Ducks</button>
+    <div class="duck-hero fade-in">
+      <span class="emoji">${duckEmoji(duck)}</span>
+      <div class="name">${esc(duck.name)}</div>
+      ${badgeHTML(duck.rarity)}
+      ${duck.bio?`<div class="bio">"${esc(duck.bio)}"</div>`:''}
+      <div style="margin:12px 0">${bountyHTML(b)}</div>
+    </div>
+    <div class="duck-stats">
+      <div><span class="stat-val">${ff.length}</span>finds</div>
+      <div><span class="stat-val">${uniqueLocations.size}</span>locations</div>
+    </div>
+  `;
+
+  // Last seen
+  html+=`<div class="card" style="text-align:center">`;
+  if(lf){
+    html+=`<div style="color:var(--muted);font-size:0.82rem">Last seen</div>
+      <div style="font-size:1.05rem;font-weight:600;margin-top:2px">${esc(lf.location||'Unknown')}, ${timeAgo(lf.found_at)}</div>`;
+    if(lf.hint){
+      html+=`<div class="hint-box" style="margin-top:12px;text-align:left">
+        <div class="hint-label">💡 Hint from last hider</div>
+        <div class="hint-text">${esc(lf.hint)}</div>
+      </div>`;
+    }
+    if(lf.hide_photo_url){
+      html+=`<img src="${esc(lf.hide_photo_url)}" class="hide-photo" alt="Hiding spot" onclick="openLightbox('${esc(lf.hide_photo_url)}')">`;
+    }
+    if(lf.difficulty){
+      const diffEmoji=lf.difficulty==='evil'?'😈':lf.difficulty==='tricky'?'🤔':'😊';
+      html+=`<div style="margin-top:8px;color:var(--muted);font-size:0.82rem">${diffEmoji} Hidden difficulty: <strong>${esc(lf.difficulty)}</strong></div>`;
+    }
+  } else {
+    html+=`<div style="font-size:1.1rem;font-weight:600">Never been found!</div>
+      <div style="color:var(--muted);font-size:0.85rem;margin-top:4px">You could be the first 👀</div>`;
+  }
+  html+=`</div>`;
+
+  // Find button / steps
+  html+=`
+    <div id="find-flow">
+      <div id="step-button" class="step active" style="margin:16px 0">
+        <button class="btn-primary" onclick="startFind()">🎉 I FOUND ${esc(duck.name).toUpperCase()}!</button>
+      </div>
+      <div id="step-celebrate" class="step"></div>
+      <div id="step-form" class="step"></div>
+      <div id="step-rehide" class="step"></div>
+      <div id="step-done" class="step"></div>
+    </div>
+  `;
+
+  // Passport
+  if(ff.length){
+    html+=`<div class="section"><div class="section-title">🛂 Duck Passport</div><div class="passport">`;
+    ff.slice().reverse().forEach((f,i)=>{
+      const photo=f.photo_url?`<br><img src="${esc(f.photo_url)}" style="max-width:120px;border-radius:6px;margin-top:6px;cursor:pointer" onclick="openLightbox('${esc(f.photo_url)}')" loading="lazy">`:'';
+      html+=`
+        <div class="passport-entry">
+          <div class="passport-num">${i+1}</div>
+          <div class="passport-detail">
+            <strong>${esc(f.finder_name||'Anonymous')}</strong> found at ${esc(f.location||'unknown')}
+            ${f.difficulty?` · ${esc(f.difficulty)}`:''} 
+            <div class="meta">${timeAgo(f.found_at)}</div>
+            ${photo}
+          </div>
+        </div>
+      `;
+    });
+    html+=`</div></div>`;
+  }
+
+  html+=`<div class="footer">FindtheDuckies.com · Boston to Bermuda 2026</div>`;
+  app.innerHTML=html;
+
+  // Wire up find flow
+  window._currentDuck=duck;
+  window._currentBounty=b;
+  window._currentFindings=ff;
+}
+
+// ── Find Flow ──
+function showStep(name){
+  document.querySelectorAll('#find-flow .step').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById('step-'+name);
+  if(el){el.classList.add('active');el.scrollIntoView({behavior:'smooth',block:'start'})}
+}
+
+window.startFind=function(){
+  const duck=window._currentDuck;
+  const b=window._currentBounty;
+
+  fireConfetti();
+
+  // Celebration
+  const cel=document.getElementById('step-celebrate');
+  cel.innerHTML=`
+    <div class="celebration fade-in">
+      <span class="big-emoji">🎉</span>
+      <div class="congrats">YOU FOUND ${esc(duck.name).toUpperCase()}!</div>
+      <div class="points-earned">${b.mult>1?`🔥 ${b.pts} points (${b.mult}× bounty!)`:b.pts+' points!'}</div>
+    </div>
+  `;
+  showStep('celebrate');
+
+  setTimeout(()=>{
+    // Form
+    const form=document.getElementById('step-form');
+    let locOpts=LOCATIONS.map(l=>`<option value="${esc(l)}">${esc(l)}</option>`).join('');
+    form.innerHTML=`
+      <div class="card fade-in">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" id="find-name" placeholder="What should we call you?" maxlength="40">
+        </div>
+        <div class="form-group">
+          <label>Where did you find it?</label>
+          <select id="find-location"><option value="">Select location...</option>${locOpts}</select>
+        </div>
+        <div class="form-group">
+          <label>Photo with the duck <span class="bonus">(optional)</span></label>
+          <div class="photo-upload" id="find-photo-wrap">
+            📷 Tap to take a photo
+            <input type="file" accept="image/*" capture="environment" id="find-photo" onchange="previewPhoto(this,'find-photo-wrap')">
+          </div>
+        </div>
+        <button class="btn-primary" onclick="submitFind()" id="submit-find-btn">LOG MY FIND 🦆</button>
+      </div>
+    `;
+    showStep('form');
+  },1800);
+};
+
+window.previewPhoto=function(input,wrapId){
+  const wrap=document.getElementById(wrapId);
+  if(input.files&&input.files[0]){
+    const reader=new FileReader();
+    reader.onload=(e)=>{
+      let prev=wrap.querySelector('.preview');
+      if(!prev){prev=document.createElement('img');prev.className='preview';wrap.appendChild(prev)}
+      prev.src=e.target.result;
+      wrap.querySelector('input').style.position='absolute';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+};
+
+window.submitFind=async function(){
+  const duck=window._currentDuck;
+  const b=window._currentBounty;
+  const btn=document.getElementById('submit-find-btn');
+  btn.disabled=true;btn.textContent='Logging...';
+
+  const name=document.getElementById('find-name').value.trim()||'Anonymous';
+  const loc=document.getElementById('find-location').value;
+  const photoInput=document.getElementById('find-photo');
+
+  let photoUrl=null;
+  if(photoInput.files&&photoInput.files[0]){
     try{
-      if(file&&file.size){
-        const blob=await shrink(file);
-        const path=duck_id+'/'+Date.now()+'.jpg';
-        const up=await sb.storage.from('duck-photos').upload(path,blob,{contentType:'image/jpeg',upsert:false});
-        if(up.error) throw up.error;
-        photo_url=sb.storage.from('duck-photos').getPublicUrl(path).data.publicUrl;
-      }
-      const ins=await sb.from('findings').insert({duck_id,finder_name:fd.get('finder_name').trim(),location:fd.get('location'),photo_url});
-      if(ins.error) throw ins.error;
-      celebrate();
-      await loadData();
-      showRehidePrompt(duck_id,fd.get('finder_name').trim());
-    }catch(err){
-      app.insertAdjacentHTML('afterbegin','<div class="msg err">Could not log find: '+esc(err.message)+'</div>');
-      btn.disabled=false;btn.textContent='Stamp the Passport 🦆';
-    }
+      const blob=await compressPhoto(photoInput.files[0]);
+      photoUrl=await uploadPhoto(blob,'find');
+    }catch(e){console.error('Photo upload failed',e)}
   }
 
-  function showRehidePrompt(duck_id,name){
-    const d=ducks.find(x=>x.id===duck_id);
-    const fs=findings.filter(f=>f.duck_id===duck_id);
+  const{data,error}=await sb.from('findings').insert({
+    duck_id:duck.id,
+    finder_name:name,
+    location:loc||null,
+    photo_url:photoUrl,
+    found_at:new Date().toISOString()
+  }).select().single();
 
-    app.innerHTML=`
-      <div class="hero">
-        <div class="big-icon">🎉</div>
-        <h1>Passport Stamped!</h1>
-        <div class="sub">Nice find, ${esc(name)}!</div>
-      </div>
+  if(error){
+    btn.disabled=false;btn.textContent='LOG MY FIND 🦆';
+    toast('Error logging find. Try again!');
+    console.error(error);return;
+  }
 
-      <div class="rehide-box">
-        <h3>🔄 Now Re-Hide This Duck!</h3>
-        <p>The adventure doesn't stop here. Hide ${esc(d.name)} somewhere new on the ship for the next person to find!</p>
-        <div class="steps">
-          1. Pick a sneaky spot 👀<br>
-          2. Place the duck where someone will stumble on it<br>
-          3. Make sure the QR code is visible<br>
-          4. Walk away and wait for the leaderboard to update 😎
+  window._currentFindingId=data.id;
+  addMyFind(duck.id,duck.name,b.pts);
+
+  // Show re-hide step
+  const rehide=document.getElementById('step-rehide');
+  rehide.innerHTML=`
+    <div class="card fade-in">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:2rem">🔄</div>
+        <div style="font-size:1.2rem;font-weight:700;color:var(--yellow);margin-top:4px">YOUR TURN TO HIDE!</div>
+        <div style="color:var(--muted);font-size:0.85rem;margin-top:4px">
+          You're now the hider. The next person who finds <strong>${esc(duck.name)}</strong> will see YOUR hint.
         </div>
       </div>
-
-      <div class="stats">
-        <div class="stat"><b>${fs.length}</b><span>total finds</span></div>
-        <div class="stat"><b>${uniqueSpots(duck_id)}</b><span>locations visited</span></div>
+      <div class="form-group">
+        <label>Drop a hint for the next finder <span class="bonus">+5 bonus pts!</span></label>
+        <textarea id="rehide-hint" placeholder="e.g. Look where the cocktails are shaken..." maxlength="200"></textarea>
       </div>
-
-      <div class="panel">
-        <h2>📜 ${esc(d.name)}'s Journey</h2>
-        ${fs.length?`<ol class="passport">${fs.sort((a,b)=>new Date(b.found_at)-new Date(a.found_at)).map((f,i)=>`
-          <li>
-            <span class="stamp">${fs.length-i}</span>
-            <div>
-              <div class="pname">${esc(f.finder_name)}</div>
-              <div class="pmeta">${esc(f.location||'Somewhere')} · ${time(f.found_at)}</div>
-            </div>
-            ${f.photo_url?`<img class="photo" src="${esc(f.photo_url)}" alt="">`:''}
-          </li>`).join('')}</ol>`:''}
+      <div class="form-group">
+        <label>Photo of hiding spot <span class="bonus">+10 bonus pts!</span></label>
+        <div class="photo-upload" id="rehide-photo-wrap">
+          📷 Snap the hiding spot
+          <input type="file" accept="image/*" capture="environment" id="rehide-photo" onchange="previewPhoto(this,'rehide-photo-wrap')">
+        </div>
       </div>
+      <div class="form-group">
+        <label>How well did you hide it?</label>
+        <div class="diff-group">
+          <button class="diff-btn" onclick="pickDiff(this,'easy')">😊 Easy</button>
+          <button class="diff-btn" onclick="pickDiff(this,'tricky')">🤔 Tricky</button>
+          <button class="diff-btn" onclick="pickDiff(this,'evil')">😈 Evil</button>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="submitRehide()" id="submit-rehide-btn">DUCK HIDDEN! 🫣</button>
+      <button class="btn-skip" onclick="skipRehide()">Skip — I'm keeping this duck for now</button>
+    </div>
+  `;
+  showStep('rehide');
+};
 
-      <a class="btn back" href="#/">← All Ducks & Leaderboard</a>
-      <div class="foot">FindtheDuckies.com</div>`;
+window._selectedDiff='';
+window.pickDiff=function(btn,val){
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  window._selectedDiff=val;
+};
+
+window.submitRehide=async function(){
+  const btn=document.getElementById('submit-rehide-btn');
+  btn.disabled=true;btn.textContent='Saving...';
+
+  const hint=document.getElementById('rehide-hint').value.trim()||null;
+  const photoInput=document.getElementById('rehide-photo');
+  const diff=window._selectedDiff||null;
+  let hidePhotoUrl=null;
+
+  if(photoInput.files&&photoInput.files[0]){
+    try{
+      const blob=await compressPhoto(photoInput.files[0]);
+      hidePhotoUrl=await uploadPhoto(blob,'hide');
+    }catch(e){console.error('Photo upload failed',e)}
   }
 
-  function shrink(file){return new Promise((res,rej)=>{
-    const img=new Image(),r=new FileReader();
-    r.onload=()=>img.src=r.result;r.onerror=rej;
-    img.onload=()=>{
-      let w=img.width,h=img.height,m=800;
-      if(w>m||h>m){if(w>h){h=Math.round(h*m/w);w=m}else{w=Math.round(w*m/h);h=m}}
-      const c=document.createElement('canvas');c.width=w;c.height=h;
-      c.getContext('2d').drawImage(img,0,0,w,h);
-      c.toBlob(b=>b?res(b):rej(Error('Compress failed')),'image/jpeg',.7);
-    };r.readAsDataURL(file);
-  })}
+  const update={};
+  if(hint)update.hint=hint;
+  if(hidePhotoUrl)update.hide_photo_url=hidePhotoUrl;
+  if(diff)update.difficulty=diff;
 
-  function celebrate(){
-    const box=document.getElementById('confetti');
-    for(let i=0;i<40;i++){
-      const s=document.createElement('span');
-      s.className='conf';
-      s.textContent=['🦆','💛','🎉','⭐','👑'][i%5];
-      s.style.left=Math.random()*100+'vw';
-      s.style.animationDelay=Math.random()*.4+'s';
-      box.appendChild(s);
-      setTimeout(()=>s.remove(),2200);
-    }
+  if(Object.keys(update).length){
+    await sb.from('findings').update(update).eq('id',window._currentFindingId);
   }
-  </script>
+
+  finishFlow(hint,hidePhotoUrl);
+};
+
+window.skipRehide=function(){
+  finishFlow(null,null);
+};
+
+function finishFlow(hint,hidePhoto){
+  const duck=window._currentDuck;
+  const ff=window._currentFindings;
+  const findNum=ff.length+1;
+
+  // Bonus calc
+  let bonus=0;
+  if(hint)bonus+=5;
+  if(hidePhoto)bonus+=10;
+
+  const done=document.getElementById('step-done');
+  done.innerHTML=`
+    <div class="card fade-in" style="text-align:center">
+      <div style="font-size:3rem;margin-bottom:8px">✨</div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--yellow)">You're finder #${findNum} of ${esc(duck.name)}!</div>
+      ${bonus?`<div style="color:var(--uncommon);margin-top:6px;font-weight:600">+${bonus} bonus points earned!</div>`:''}
+      <div style="margin-top:16px">
+        <button class="btn-secondary" onclick="location.hash='#/';location.reload()">← Back to All Ducks</button>
+      </div>
+    </div>
+  `;
+  showStep('done');
+}
+
+// ── Init ──
+window.addEventListener('hashchange',render);
+render();
+</script>
 </body>
 </html>
