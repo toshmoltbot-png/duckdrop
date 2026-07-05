@@ -298,6 +298,41 @@ a{color:var(--teal);text-decoration:none}
   margin:8px 0 10px;font-weight:400;line-height:1.5;
 }
 
+/* ── Card Flip ── */
+.card-flip-container{
+  perspective:1000px;width:85%;max-width:300px;margin:0 auto 14px;
+  cursor:pointer;position:relative;
+}
+.card-flip-inner{
+  position:relative;width:100%;transition:transform .6s cubic-bezier(.4,.2,.2,1);
+  transform-style:preserve-3d;
+}
+.card-flip-container.flipped .card-flip-inner{transform:rotateY(180deg)}
+.card-flip-front,.card-flip-back{
+  width:100%;border-radius:18px;backface-visibility:hidden;
+  box-shadow:0 12px 48px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.1);
+}
+.card-flip-front{display:block}
+.card-flip-back{
+  position:absolute;top:0;left:0;
+  transform:rotateY(180deg);
+}
+.card-flip-hint{
+  color:var(--muted);font-size:.7rem;text-transform:uppercase;
+  letter-spacing:.15em;font-weight:600;margin-top:6px;
+  transition:opacity .3s;
+}
+.card-flip-container.flipped .card-flip-hint .flip-text-front{display:none}
+.card-flip-container:not(.flipped) .card-flip-hint .flip-text-back{display:none}
+.card-flip-container[data-rarity="legendary"] .card-flip-front,
+.card-flip-container[data-rarity="legendary"] .card-flip-back{
+  box-shadow:0 12px 48px rgba(0,0,0,.45),0 0 0 2px rgba(234,179,8,.35),0 0 24px rgba(234,179,8,.12);
+}
+.card-flip-container[data-rarity="mythic"] .card-flip-front,
+.card-flip-container[data-rarity="mythic"] .card-flip-back{
+  box-shadow:0 12px 48px rgba(0,0,0,.45),0 0 0 2px rgba(168,85,247,.35),0 0 24px rgba(168,85,247,.15);
+}
+
 /* ── Detail Info Cards ── */
 .detail-stats{
   display:flex;justify-content:center;gap:32px;margin:14px 0;
@@ -1380,6 +1415,7 @@ async function loadData(){
   // Auto-populate image URLs from local images folder
   for(const d of allDucks){
     if(!d.image_url) d.image_url='images/'+d.name.toLowerCase()+'.jpg';
+    d.back_image_url='images/'+d.name.toLowerCase()+'_back.jpg';
   }
 }
 
@@ -1594,13 +1630,20 @@ function renderDuck(id){
 
     <!-- Hero Section -->
     <div class="detail-hero fade-in" data-rarity="${esc(r)}">
-      ${duck.image_url
-        ?`<img class="detail-hero-img" src="${esc(duck.image_url)}" alt="${esc(duck.name)}">`
-        :`<span class="detail-hero-emoji">${duckEmoji(duck)}</span>`}
+      ${duck.image_url && duck.back_image_url
+        ?`<div class="card-flip-container" data-rarity="${esc(r)}" onclick="this.classList.toggle('flipped')">
+            <div class="card-flip-inner">
+              <img class="card-flip-front" src="${esc(duck.image_url)}" alt="${esc(duck.name)}" loading="lazy">
+              <img class="card-flip-back" src="${esc(duck.back_image_url)}" alt="${esc(duck.name)} - Lore" loading="lazy">
+            </div>
+            <div class="card-flip-hint"><span class="flip-text-front">TAP TO FLIP</span><span class="flip-text-back">TAP TO FLIP BACK</span></div>
+          </div>`
+        :duck.image_url
+          ?`<img class="detail-hero-img" src="${esc(duck.image_url)}" alt="${esc(duck.name)}">`
+          :`<span class="detail-hero-emoji">${duckEmoji(duck)}</span>`}
       <div class="detail-hero-name">${esc(duck.name)}</div>
       <div class="detail-hero-stars stars-${r}">${rarityStars(duck.rarity)}</div>
       ${badgeHTML(duck.rarity)}
-      ${duck.bio?`<div class="detail-hero-bio">"${esc(duck.bio)}"</div>`:''}
     </div>
 
     <!-- Stats -->
