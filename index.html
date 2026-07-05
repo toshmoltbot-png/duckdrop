@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DuckDrop</title>
+  <style>
+    :root{--navy:#183050;--blue:#25486f;--yellow:#ffd700;--ink:#10233b;--paper:#fff8cf;--muted:#b7c5d8;--ok:#37d67a;--bad:#ff6b6b}
+    *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--navy);color:white}a{color:inherit}button,input,select,textarea{font:inherit}
+    .wrap{max-width:760px;margin:auto;padding:14px 14px 72px}.top{position:sticky;top:0;z-index:3;background:rgba(24,48,80,.95);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.12)}
+    .bar{max-width:760px;margin:auto;display:flex;align-items:center;gap:8px;padding:10px 14px}.brand{font-weight:900;font-size:22px;color:var(--yellow);text-decoration:none}.spacer{flex:1}
+    .nav{display:flex;gap:6px}.nav a,.btn{border:0;border-radius:8px;background:var(--yellow);color:var(--ink);padding:11px 13px;font-weight:800;text-decoration:none;min-height:44px;cursor:pointer}.nav a{background:#24456c;color:white;padding:9px 10px}
+    .btn.secondary{background:#24456c;color:white}.btn.ghost{background:transparent;color:white;border:1px solid rgba(255,255,255,.25)}.btn.danger{background:var(--bad);color:white}.btn:disabled{opacity:.55}
+    .hero{padding:16px 0 8px}.kicker{color:var(--yellow);font-weight:900;text-transform:uppercase;font-size:12px;letter-spacing:.08em}.h1{font-size:34px;line-height:1.02;margin:6px 0 8px;font-weight:950}.muted{color:var(--muted)}.big{font-size:18px}
+    .panel{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:14px;margin:12px 0}.duckcard{background:var(--paper);color:var(--ink);border-radius:8px;padding:14px;margin:10px 0;box-shadow:0 4px 0 rgba(0,0,0,.15)}
+    label{display:block;font-weight:800;margin:12px 0 6px}input,select,textarea{width:100%;border:0;border-radius:8px;padding:13px;background:white;color:var(--ink);min-height:46px}textarea{min-height:80px;resize:vertical}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.stat{background:#24456c;border-radius:8px;padding:10px}.stat b{font-size:24px;color:var(--yellow)}
+    .passport{list-style:none;padding:0;margin:10px 0}.passport li{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.12)}.badge{width:34px;height:34px;border-radius:50%;background:var(--yellow);color:var(--ink);display:grid;place-items:center;font-weight:900;flex:0 0 auto}
+    .photo{width:58px;height:58px;object-fit:cover;border-radius:8px;margin-left:auto}.empty{text-align:center;color:var(--muted);padding:28px 10px}.err{background:#512337;color:#ffd8e2}.ok{background:#1f5a45;color:#d7ffe7}.tiny{font-size:12px}
+    #confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9}.conf{position:absolute;top:-12px;font-size:22px;animation:fall 1.7s linear forwards}@keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.2}}
+    .qrgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:12px}.qrlabel{background:white;color:var(--ink);border-radius:8px;padding:10px;text-align:center;font-weight:800}.qrlabel canvas,.qrlabel img{width:112px;height:112px}.admin-only{display:none}
+    @media (max-width:520px){.h1{font-size:29px}.brand{font-size:20px}.nav a{font-size:13px;padding:9px 8px}.wrap{padding-inline:12px}.photo{width:48px;height:48px}}
+    @media print{body{background:white;color:black}.top,.no-print,.panel:not(.printable){display:none!important}.wrap{max-width:none;padding:0}.admin-only{display:block}.printable{display:block;border:0;margin:0;padding:0}.qrgrid{grid-template-columns:repeat(3,2in);gap:.12in}.qrlabel{width:2in;height:2in;border:1px dashed #aaa;border-radius:0;page-break-inside:avoid}.qrlabel canvas,.qrlabel img{width:1.35in;height:1.35in}}
+  </style>
+</head>
+<body>
+  <header class="top no-print"><div class="bar"><a class="brand" href="#/ducks">DuckDrop</a><span>🦆</span><div class="spacer"></div><nav class="nav"><a href="#/ducks">Ducks</a><a href="#/leaderboard">Leaders</a><a href="#/admin">Admin</a></nav></div></header>
+  <main class="wrap" id="app"></main><div id="confetti"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+  const SUPABASE_URL='https://udzuqfzbynyxlugxwhyx.supabase.co';
+  const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkenVxZnpieW55eGx1Z3h3aHl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMDE5NzUsImV4cCI6MjA5ODc3Nzk3NX0.b2vI7soo5h8ZDvy3lzfikC71xOToWqqISdPIg0zVycI';
+  const SITE_URL=location.origin+location.pathname;
+  const LOCATIONS=['Pool Deck','Lido Deck','Casino','Buffet','Bar','Lobby','Elevator','Cabin Hallway','Theater','Gym','Spa','Other'];
+  const $=s=>document.querySelector(s), app=$('#app');
+  const configured=SUPABASE_URL.startsWith('http')&&!SUPABASE_ANON_KEY.startsWith('PASTE_');
+  const sb=configured?supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
+  let ducks=[], findings=[];
+  addEventListener('hashchange',route); addEventListener('load',route);
+  function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+  function time(t){return t?new Date(t).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}):'Never'}
+  function msg(text,cls='err'){return `<div class="panel ${cls}">${text}</div>`}
+  async function loadData(){
+    if(!sb) return;
+    const [d,f]=await Promise.all([
+      sb.from('ducks').select('*').order('created_at',{ascending:false}),
+      sb.from('findings').select('*').order('found_at',{ascending:false})
+    ]);
+    if(d.error||f.error) throw d.error||f.error;
+    ducks=d.data||[]; findings=f.data||[];
+  }
+  async function route(){
+    const hash=location.hash||'#/ducks', parts=hash.split('/').filter(Boolean);
+    if(!sb){app.innerHTML=msg('Add your Supabase URL and anon key in index.html to launch DuckDrop.');return}
+    app.innerHTML='<div class="empty">Loading ducks...</div>';
+    try{await loadData()}catch(e){app.innerHTML=msg('Supabase error: '+esc(e.message));return}
+    if(parts[0]==='#') parts.shift();
+    if(parts[0]==='leaderboard') return leaderboard();
+    if(parts[0]==='admin') return admin();
+    if(parts[0]==='duck'&&parts[1]) return duck(parts[1]);
+    ducksView();
+  }
+  function count(id){return findings.filter(f=>f.duck_id===id).length}
+  function lastFind(id){return findings.find(f=>f.duck_id===id)}
+  function duck(id){
+    const d=ducks.find(x=>x.id===id); if(!d){app.innerHTML=msg('Duck not found.');return}
+    const fs=findings.filter(f=>f.duck_id===id).sort((a,b)=>new Date(b.found_at)-new Date(a.found_at));
+    app.innerHTML=`<section class="hero"><div class="kicker">You found a cruise duck</div><h1 class="h1">🦆 ${esc(d.name)}</h1><p class="big">Hidden by <b>${esc(d.hidden_by)}</b>${d.hidden_location?' near '+esc(d.hidden_location):''}.</p></section>
+    <div class="grid"><div class="stat"><b>${fs.length}</b><br>passport stamps</div><div class="stat"><b>${esc(lastFind(id)?.location||'New')}</b><br>last spotted</div></div>
+    ${d.description?`<div class="duckcard">${esc(d.description)}</div>`:''}
+    <form class="panel no-print" id="findForm"><h2>Stamp the passport</h2>
+      <label>Your name</label><input name="finder_name" maxlength="60" required placeholder="Captain Rich">
+      <label>Where did you find it?</label><select name="location">${LOCATIONS.map(l=>`<option>${l}</option>`).join('')}</select>
+      <label>Photo (optional)</label><input name="photo" type="file" accept="image/*">
+      <p class="tiny muted">Photos are compressed before upload to save ship wifi.</p>
+      <button class="btn" type="submit">Log my find 🦆</button>
+    </form>
+    <section class="panel"><h2>Duck Passport</h2>${passport(fs)}</section>`;
+    $('#findForm').onsubmit=e=>submitFind(e,d.id);
+  }
+  function passport(fs){
+    if(!fs.length) return '<div class="empty">No stamps yet. You can be first.</div>';
+    return `<ol class="passport">${fs.map((f,i)=>`<li><span class="badge">${fs.length-i}</span><div><b>${esc(f.finder_name)}</b><br><span class="muted">${esc(f.location||'Somewhere onboard')} · ${time(f.found_at)}</span></div>${f.photo_url?`<img class="photo" src="${esc(f.photo_url)}" alt="">`:''}</li>`).join('')}</ol>`;
+  }
+  async function submitFind(e,duck_id){
+    e.preventDefault(); const fd=new FormData(e.target), btn=e.target.querySelector('button'); btn.disabled=true; btn.textContent='Stamping...';
+    let photo_url=null, file=fd.get('photo');
+    try{
+      if(file&&file.size){const blob=await shrink(file), path=`${duck_id}/${Date.now()}.jpg`; const up=await sb.storage.from('duck-photos').upload(path,blob,{contentType:'image/jpeg',upsert:false}); if(up.error) throw up.error; photo_url=sb.storage.from('duck-photos').getPublicUrl(path).data.publicUrl}
+      const ins=await sb.from('findings').insert({duck_id,finder_name:fd.get('finder_name').trim(),location:fd.get('location'),photo_url}); if(ins.error) throw ins.error;
+      celebrate(); await loadData(); duck(duck_id); app.insertAdjacentHTML('afterbegin',msg('Passport stamped. Happy hunting!','ok'));
+    }catch(err){app.insertAdjacentHTML('afterbegin',msg('Could not log find: '+esc(err.message))); btn.disabled=false; btn.textContent='Log my find 🦆'}
+  }
+  function shrink(file){return new Promise((res,rej)=>{const img=new Image(), r=new FileReader(); r.onload=()=>img.src=r.result; r.onerror=rej; img.onload=()=>{let w=img.width,h=img.height,m=900;if(w>m||h>m){if(w>h){h=Math.round(h*m/w);w=m}else{w=Math.round(w*m/h);h=m}}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);c.toBlob(b=>b?res(b):rej(Error('Photo compression failed')),'image/jpeg',.72)}; r.readAsDataURL(file)})}
+  function celebrate(){const box=$('#confetti'); for(let i=0;i<34;i++){let s=document.createElement('span');s.className='conf';s.textContent=['🦆','💛','🎉','⭐'][i%4];s.style.left=Math.random()*100+'vw';s.style.animationDelay=Math.random()*.35+'s';box.appendChild(s);setTimeout(()=>s.remove(),2100)}}
+  function leaderboard(){
+    const m={}; findings.forEach(f=>{const k=(f.finder_name||'').trim(); if(!k)return; m[k]=m[k]||{name:k,count:0,last:f.found_at}; m[k].count++; if(new Date(f.found_at)>new Date(m[k].last))m[k].last=f.found_at});
+    const rows=Object.values(m).sort((a,b)=>b.count-a.count||new Date(b.last)-new Date(a.last));
+    app.innerHTML=`<section class="hero"><div class="kicker">Top hunters</div><h1 class="h1">Leaderboard 🏆</h1></section><div class="panel">${rows.length?`<ol class="passport">${rows.map((r,i)=>`<li><span class="badge">${i+1}</span><div><b>${esc(r.name)}</b><br><span class="muted">${r.count} duck${r.count===1?'':'s'} found · last ${time(r.last)}</span></div></li>`).join('')}</ol>`:'<div class="empty">No finds yet.</div>'}</div>`;
+  }
+  function ducksView(){
+    app.innerHTML=`<section class="hero"><div class="kicker">Shipwide hunt</div><h1 class="h1">All Ducks 🦆</h1><p class="muted">Tap a duck to view its passport.</p></section><div class="grid">${ducks.map(d=>{let l=lastFind(d.id);return `<a class="duckcard" href="#/duck/${d.id}"><h3>🦆 ${esc(d.name)}</h3><p><b>${count(d.id)}</b> finds</p><p class="muted">Last: ${esc(l?.location||d.hidden_location||'Not found yet')}</p></a>`}).join('')||'<div class="empty">No ducks added yet.</div>'}</div>`;
+  }
+  function admin(){
+    const ok=localStorage.duckdropAdmin==='1';
+    if(!ok){app.innerHTML=`<section class="hero"><h1 class="h1">Admin</h1></section><form class="panel" id="login"><label>Password</label><input type="password" name="pw" autofocus><button class="btn">Unlock</button></form>`;$('#login').onsubmit=e=>{e.preventDefault();if(new FormData(e.target).get('pw')==='quack2026'){localStorage.duckdropAdmin='1';admin()}else alert('No quack.')};return}
+    app.innerHTML=`<section class="hero no-print"><div class="kicker">Duck wrangler</div><h1 class="h1">Admin 🦆</h1></section>
+    <form class="panel no-print" id="addDuck"><h2>Add Duck</h2><label>Name / number</label><input name="name" required placeholder="Sunny #001"><label>Description</label><textarea name="description" placeholder="Tiny yellow duck with blue sunglasses"></textarea><label>Hidden by</label><input name="hidden_by" required placeholder="Rich"><label>Starting location</label><input name="hidden_location" placeholder="Pool Deck"><button class="btn">Add duck + make QR</button></form>
+    <div class="panel printable"><div class="row no-print"><h2 style="margin-right:auto">Printable QR Sheet</h2><button class="btn secondary" id="print">Print All QR Codes</button></div><div id="qrs" class="qrgrid"></div></div>`;
+    $('#addDuck').onsubmit=addDuck; $('#print').onclick=()=>print(); renderQRs();
+  }
+  async function addDuck(e){e.preventDefault();const fd=new FormData(e.target), rec={name:fd.get('name').trim(),description:fd.get('description').trim(),hidden_by:fd.get('hidden_by').trim(),hidden_location:fd.get('hidden_location').trim()};const r=await sb.from('ducks').insert(rec).select().single();if(r.error){alert(r.error.message);return}e.target.reset();ducks.unshift(r.data);renderQRs()}
+  async function qrLib(){if(window.QRCode)return;await new Promise((res,rej)=>{let s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+  async function renderQRs(){await qrLib();const q=$('#qrs'); if(!q)return; q.innerHTML=''; ducks.forEach(d=>{let div=document.createElement('div');div.className='qrlabel';div.innerHTML=`<div id="qr-${d.id}"></div><div>${esc(d.name)}</div>`;q.appendChild(div);new QRCode(div.firstChild,{text:SITE_URL+'#/duck/'+d.id,width:112,height:112,correctLevel:QRCode.CorrectLevel.M})})}
+  </script>
+</body>
+</html>
