@@ -408,7 +408,7 @@ function getBraggingRight(duck,ff,bounty){
     return d.toDateString()===today.toDateString();
   });
   const rights=[];
-  if(ff.length===0) rights.push('🏆 FIRST PERSON EVER to find '+duck.name+'!');
+  if(ff.length===0) rights.push('🌟 '+duck.name+' has chosen you. You are the first human this duck has ever trusted.');
   if(todayFinds.length===0) rights.push('⭐ FIRST person today to find '+duck.name+'!');
   if(h>48) rights.push('🔥 You broke a '+Math.floor(h)+'-hour cold streak!');
   else if(h>24) rights.push('🔥 '+duck.name+' was hiding for '+Math.floor(h)+' hours. Not anymore.');
@@ -473,6 +473,54 @@ function getFunnyStats(duckId){
     'Times hidden near food: '+s(8),
     ['Most embarrassing spot: Women\'s shoe rack','Most embarrassing spot: Behind the ice cream machine','Most embarrassing spot: Inside a life vest','Most embarrassing spot: On top of the buffet sneeze guard','Most embarrassing spot: In the towel animal display'][s(5)-1]
   ];
+}
+
+// ── Signature Quacks ──
+function getQuack(name){
+  const q={
+    'Astro':'*radio static* Quack.',
+    'Speedo':'*splash* Quack!',
+    'Jaws':'*ominous quack*',
+    'OG':'Quack.',
+    'Axel':'*guitar riff* Quaaack!',
+    'Puddles':'*drip drip* Quack.',
+    'Biscuit':'*panting* Quack! Quack!',
+    'Luna':'*whispered* ...quack.',
+    'Rosie':'ARRR-quack!',
+    'Mango':'*tropical quack*',
+    'Shaggy':'*yawns* quack...',
+    'Confetti':'🎉 QUACK! 🎉',
+    'Scuba':'*blub blub* quack',
+    'Sparkle':'✨ Quack ✨',
+    'Tex':'Yeehaw... quack.',
+    'TITANIC':'*deep horn* QUAAACK.',
+    'KRAKEN':'*the ocean trembles* ...quack.',
+  };
+  return q[name]||'Quack.';
+}
+
+// ── Duck Gossip ──
+function getDuckGossip(name){
+  const g={
+    'Astro':"Don't tell Jaws, but he thinks he's hiding better than he actually is.",
+    'Speedo':'Luna keeps saying she only comes out at night. I saw her at the buffet at noon.',
+    'Jaws':'Tex keeps bragging about the casino. Nobody cares, Tex.',
+    'OG':"Everyone's got costumes now. I was here first. Remember that.",
+    'Axel':"Sparkle thinks she's the star of the ship. I have a guitar.",
+    'Puddles':'Biscuit tried to fetch me yesterday. We do not talk about it.',
+    'Biscuit':'I tried to make friends with Jaws. He just... stared.',
+    'Luna':'Confetti threw a party last night. I was not invited.',
+    'Rosie':'Scuba thinks the pool counts as the ocean. It does not.',
+    'Mango':'Shaggy needs a comb. I have been saying this for days.',
+    'Shaggy':'Mango keeps judging my hair. At least I do not have a fruit on my head.',
+    'Confetti':'Astro keeps talking about space. We are on a boat.',
+    'Scuba':'Puddles wears a raincoat on a cruise ship. Think about that.',
+    'Sparkle':'Tex called me basic. A COWBOY called ME basic.',
+    'Tex':'Sparkle called me basic. I have a hat AND a bandana.',
+    'TITANIC':'KRAKEN thinks he is bigger. We are literally the same size.',
+    'KRAKEN':'TITANIC stole my hiding spot twice. TWICE.',
+  };
+  return g[name]||null;
 }
 
 // ── Easter Egg (1% chance) ──
@@ -796,7 +844,9 @@ function renderDuck(id){
     </div>
     <div class="card" style="text-align:center;font-style:italic;font-size:.95rem;color:var(--teal-dark);line-height:1.5">
       "​${esc(getDuckDialogue(duck))}"
+      <div style="margin-top:8px;font-style:normal;font-size:.85rem;color:var(--muted)">${esc(getQuack(duck.name))}</div>
     </div>
+    ${getDuckGossip(duck.name)?`<div class="card" style="font-size:.85rem;color:var(--muted);font-style:italic;line-height:1.5">🤫 <em>${esc(getDuckGossip(duck.name))}</em></div>`:''}
     <div class="duck-stats">
       <div><span class="stat-val">${ff.length}</span>finds</div>
       <div><span class="stat-val">${uniqueLocations.size}</span>locations</div>
@@ -911,9 +961,10 @@ window.startFind=function(){
     <div class="celebration fade-in">
       <span class="big-emoji">🎉</span>
       <div class="congrats">YOU FOUND ${esc(duck.name).toUpperCase()}!</div>
-      <div style="font-size:1.1rem;font-weight:600;margin:4px 0 8px;color:var(--teal)">${celTheme.text}</div>
-      <div class="points-earned">${b.mult>1?`🔥 ${b.pts} points (${b.mult}× bounty!)`:b.pts+' points!'}</div>
-      <div style="margin-top:8px;font-size:.95rem;padding:8px 12px;background:var(--yellow-light);border-radius:10px;color:var(--text)">${brag}</div>
+      <div style="font-size:1rem;margin:4px 0 6px;color:var(--teal);font-weight:600">${celTheme.text}</div>
+      <div style="font-size:.9rem;font-style:italic;color:var(--muted);margin-bottom:10px">${esc(getQuack(duck.name))}</div>
+      <div style="font-size:.95rem;padding:10px 14px;background:var(--yellow-light);border-radius:10px;color:var(--text);margin-bottom:8px">${brag}</div>
+      <div style="font-size:.78rem;color:var(--muted)">${b.pts} pts${b.mult>1?' ('+b.mult+'× bounty)':''}</div>
     </div>
   `;
   showStep('celebrate');
