@@ -1377,6 +1377,10 @@ async function loadData(){
   ]);
   allDucks=dRes.data||[];
   allFindings=fRes.data||[];
+  // Auto-populate image URLs from local images folder
+  for(const d of allDucks){
+    if(!d.image_url) d.image_url='images/'+d.name.toLowerCase()+'.jpg';
+  }
 }
 
 function findingsForDuck(duckId){return allFindings.filter(f=>f.duck_id===duckId)}
