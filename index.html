@@ -9,6 +9,8 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦆</text></svg>">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* ── Reset & Variables ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#0B1426;--bg2:rgba(255,255,255,.06);--bg3:rgba(255,255,255,.1);
@@ -27,49 +29,87 @@
 html{font-size:16px;-webkit-text-size-adjust:100%}
 body{
   font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:linear-gradient(165deg,#0B1426 0%,#0D2137 40%,#0C3044 70%,#0A2A3C 100%);
+  background:linear-gradient(165deg,#0B1426 0%,#0D2137 35%,#0C3044 65%,#0A2A3C 100%);
   background-attachment:fixed;
   color:var(--text);min-height:100dvh;overflow-x:hidden;
   -webkit-font-smoothing:antialiased;
 }
 a{color:var(--teal);text-decoration:none}
-button{
-  font-family:inherit;cursor:pointer;border:none;
-  font-size:.95rem;border-radius:var(--radius);
-  min-height:48px;padding:14px 24px;
-  transition:transform .1s,box-shadow .2s;
-}
-button:active{transform:scale(0.97)}
-input,textarea,select{
-  font-family:inherit;font-size:.95rem;
-  background:rgba(255,255,255,.06);color:var(--text);
-  border:1px solid var(--glass-border);border-radius:10px;
-  padding:14px 16px;width:100%;min-height:48px;
-  transition:border-color .2s;
-}
-input:focus,textarea:focus,select:focus{outline:none;border-color:var(--teal)}
-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237B8CA3' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
-textarea{resize:vertical;min-height:80px}
 
-.container{max-width:480px;margin:0 auto;padding:0 16px 100px}
+/* ── Ocean Wave (signature visual) ── */
+.ocean-wave{
+  position:fixed;bottom:0;left:0;width:100%;height:100px;
+  overflow:hidden;z-index:0;pointer-events:none;
+}
+.ocean-wave::before{
+  content:'';position:absolute;bottom:-25px;left:-50%;
+  width:200%;height:80px;
+  background:rgba(14,165,199,.045);
+  border-radius:45%;
+  animation:waveFloat 8s ease-in-out infinite;
+}
+.ocean-wave::after{
+  content:'';position:absolute;bottom:-35px;left:-30%;
+  width:200%;height:65px;
+  background:rgba(14,165,199,.03);
+  border-radius:42%;
+  animation:waveFloat 11s ease-in-out infinite reverse;
+}
+@keyframes waveFloat{
+  0%,100%{transform:translateX(-2%) rotate(0.4deg)}
+  50%{transform:translateX(2%) rotate(-0.4deg)}
+}
 
-/* Header */
-.header{
-  text-align:center;padding:36px 20px 16px;
-  position:relative;
-}
-.header h1{
-  font-size:1.6rem;font-weight:800;letter-spacing:-.02em;
-  color:var(--text-bright);margin-bottom:4px;
-}
-.header .subtitle{color:var(--muted);font-size:.78rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase}
-.header::after{
-  content:'';position:absolute;bottom:0;left:10%;right:10%;height:1px;
-  background:linear-gradient(90deg,transparent,var(--glass-border),transparent);
-}
-p.intro,.intro{text-align:center;color:var(--muted);font-size:.85rem;margin:12px 0 0;line-height:1.6;font-weight:400}
+/* ── Container ── */
+.container{max-width:480px;margin:0 auto;padding:0 16px 100px;position:relative;z-index:1}
 
-/* Cards */
+/* ── Hero Splash ── */
+.hero-splash{
+  text-align:center;padding:52px 20px 36px;position:relative;
+}
+.hero-splash::after{
+  content:'';position:absolute;bottom:0;left:5%;right:5%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(14,165,199,.25),transparent);
+}
+.hero-pre{
+  font-size:.78rem;font-weight:700;letter-spacing:.35em;
+  text-transform:uppercase;color:var(--teal);margin-bottom:2px;
+}
+.hero-title{
+  font-size:3.4rem;font-weight:900;letter-spacing:-.04em;line-height:.92;
+  color:var(--text-bright);margin-bottom:16px;
+  text-shadow:0 0 60px rgba(14,165,199,.12),0 2px 4px rgba(0,0,0,.3);
+}
+.hero-route{
+  font-size:1.05rem;font-weight:700;color:var(--yellow);
+  letter-spacing:.06em;margin-bottom:14px;
+}
+.hero-count{
+  font-size:.9rem;color:var(--text);font-weight:500;
+  margin-bottom:8px;line-height:1.4;
+}
+.hero-cta{
+  font-size:.7rem;color:var(--muted);letter-spacing:.22em;
+  text-transform:uppercase;font-weight:600;
+}
+
+/* ── Section Labels (no emoji, accent line) ── */
+.section{margin-top:32px}
+.section-label{
+  font-size:.7rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--muted);margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-label::before{
+  content:'';width:3px;height:14px;
+  background:var(--teal);border-radius:2px;flex-shrink:0;
+}
+.section-label-inline{
+  font-size:.65rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--muted);margin-bottom:6px;
+}
+
+/* ── Cards (frosted glass) ── */
 .card{
   background:var(--glass);
   backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
@@ -78,7 +118,81 @@ p.intro,.intro{text-align:center;color:var(--muted);font-size:.85rem;margin:12px
   padding:18px;margin-bottom:12px;
 }
 
-/* Rarity Badges */
+/* ── Fleet Grid (collectible cards) ── */
+.fleet-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fleet-card{
+  background:var(--glass);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-radius:16px;padding:14px 12px 16px;
+  text-align:center;position:relative;overflow:hidden;
+  transition:transform .15s,box-shadow .3s;
+  border:1.5px solid var(--glass-border);
+}
+.fleet-card:active{transform:scale(.97)}
+.fleet-card-visual{
+  margin-bottom:8px;min-height:60px;
+  display:flex;align-items:center;justify-content:center;
+}
+.fleet-card-img{
+  width:88%;max-width:120px;border-radius:12px;
+  aspect-ratio:1;object-fit:cover;
+  box-shadow:0 4px 16px rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.08);
+}
+.fleet-card-emoji{
+  font-size:2.8rem;
+  filter:drop-shadow(0 3px 8px rgba(0,0,0,.4));
+}
+.fleet-card-name{
+  font-weight:900;font-size:.92rem;color:var(--text-bright);
+  letter-spacing:-.01em;margin-bottom:3px;
+}
+.fleet-card-stars{font-size:.68rem;letter-spacing:2px;margin-bottom:5px}
+.fleet-card-bounty{margin-top:6px}
+.fleet-card-meta{color:var(--muted);font-size:.68rem;margin-top:5px;line-height:1.3}
+.fleet-card-found{
+  position:absolute;top:8px;right:8px;
+  width:22px;height:22px;
+  background:rgba(34,197,94,.2);border:1px solid rgba(34,197,94,.4);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:.62rem;color:var(--green);font-weight:700;
+}
+
+/* Rarity card treatments */
+.fleet-card[data-rarity="common"]{
+  border-color:rgba(180,180,190,.18);
+  box-shadow:0 2px 12px rgba(140,146,154,.08);
+}
+.fleet-card[data-rarity="uncommon"]{
+  border-color:rgba(34,197,94,.22);
+  box-shadow:0 2px 20px rgba(34,197,94,.12),inset 0 0 30px rgba(34,197,94,.02);
+}
+.fleet-card[data-rarity="rare"]{
+  border-color:rgba(59,130,246,.22);
+  box-shadow:0 2px 20px rgba(59,130,246,.12),inset 0 0 30px rgba(59,130,246,.02);
+}
+.fleet-card[data-rarity="legendary"]{
+  border-color:rgba(234,179,8,.28);
+  box-shadow:0 4px 24px rgba(234,179,8,.18),inset 0 0 40px rgba(234,179,8,.03);
+}
+.fleet-card[data-rarity="mythic"]{
+  border-color:rgba(168,85,247,.32);
+  box-shadow:0 4px 28px rgba(168,85,247,.22),inset 0 0 40px rgba(168,85,247,.04);
+  animation:mythicPulse 3s ease-in-out infinite;
+}
+@keyframes mythicPulse{
+  0%,100%{box-shadow:0 4px 28px rgba(168,85,247,.22),inset 0 0 40px rgba(168,85,247,.04)}
+  50%{box-shadow:0 6px 36px rgba(168,85,247,.38),0 0 60px rgba(168,85,247,.08),inset 0 0 40px rgba(168,85,247,.06)}
+}
+
+/* Rarity star colors */
+.stars-common{color:#9CA3AF}
+.stars-uncommon{color:#4ADE80}
+.stars-rare{color:#60A5FA}
+.stars-legendary{color:#FACC15}
+.stars-mythic{color:#C084FC}
+
+/* ── Rarity Badges ── */
 .badge{
   display:inline-flex;align-items:center;gap:4px;
   padding:3px 10px;border-radius:20px;
@@ -91,7 +205,7 @@ p.intro,.intro{text-align:center;color:var(--muted);font-size:.85rem;margin:12px
 .badge-legendary{background:rgba(234,179,8,.12);color:#FACC15;border:1px solid rgba(234,179,8,.3)}
 .badge-mythic{background:rgba(168,85,247,.15);color:#C084FC;border:1px solid rgba(168,85,247,.3)}
 
-/* Bounty */
+/* ── Bounty ── */
 .bounty{font-weight:700;font-size:1rem;color:var(--yellow)}
 .bounty.hot{animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{
@@ -99,7 +213,219 @@ p.intro,.intro{text-align:center;color:var(--muted);font-size:.85rem;margin:12px
   50%{text-shadow:0 0 20px rgba(240,180,42,.6),0 0 40px rgba(239,68,68,.2)}
 }
 
-/* Buttons */
+/* ── Podium & Leaderboard ── */
+.podium{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.podium-card{
+  background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-radius:var(--radius);padding:16px 18px;
+  display:flex;align-items:center;gap:14px;
+  border:1px solid var(--glass-border);
+}
+.podium-gold{
+  border-color:rgba(250,204,21,.3);
+  box-shadow:0 4px 28px rgba(250,204,21,.12);
+  background:linear-gradient(135deg,rgba(250,204,21,.07),var(--glass));
+}
+.podium-silver{
+  border-color:rgba(156,163,175,.25);
+  box-shadow:0 2px 16px rgba(156,163,175,.08);
+}
+.podium-bronze{
+  border-color:rgba(205,127,50,.25);
+  box-shadow:0 2px 16px rgba(205,127,50,.08);
+}
+.podium-medal{font-size:1.5rem;flex-shrink:0}
+.podium-info{flex:1;min-width:0}
+.podium-name{font-weight:800;font-size:.95rem;color:var(--text-bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.podium-title{font-size:.72rem;color:var(--muted);margin-top:1px}
+.podium-right{text-align:right;flex-shrink:0}
+.podium-score{font-weight:800;font-size:1.1rem;color:var(--yellow)}
+.podium-ducks{font-size:.68rem;color:var(--muted)}
+.lb-row{
+  display:flex;align-items:center;padding:11px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.lb-row:last-child{border-bottom:none}
+.lb-rank{font-size:.9rem;font-weight:800;width:32px;text-align:center;color:var(--muted)}
+.lb-info{flex:1;margin-left:10px;min-width:0}
+.lb-name{font-weight:700;font-size:.88rem;color:var(--text-bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-stats{color:var(--muted);font-size:.7rem;margin-top:1px}
+.lb-pts{font-weight:800;font-size:.95rem;color:var(--yellow);flex-shrink:0}
+
+/* ── Activity Feed ── */
+.feed-item{
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);
+  font-size:.84rem;line-height:1.5;color:var(--text);
+  display:flex;align-items:flex-start;gap:10px;
+}
+.feed-item:last-child{border-bottom:none}
+.feed-item strong{color:var(--text-bright)}
+.feed-time{color:var(--muted);font-size:.7rem}
+.feed-cold{color:var(--red)}
+.feed-dot{
+  width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:7px;
+}
+.feed-dot-green{background:var(--green)}
+.feed-dot-red{background:var(--red)}
+.feed-content{flex:1;min-width:0}
+
+/* ── Duck Detail Hero ── */
+.detail-hero{
+  text-align:center;padding:24px 0 8px;position:relative;
+}
+.detail-hero[data-rarity="legendary"] .detail-hero-img{
+  box-shadow:0 12px 48px rgba(0,0,0,.45),0 0 0 2px rgba(234,179,8,.35),0 0 24px rgba(234,179,8,.12);
+}
+.detail-hero[data-rarity="mythic"] .detail-hero-img{
+  box-shadow:0 12px 48px rgba(0,0,0,.45),0 0 0 2px rgba(168,85,247,.35),0 0 24px rgba(168,85,247,.15);
+}
+.detail-hero-emoji{
+  font-size:4.2rem;display:block;margin-bottom:6px;
+  filter:drop-shadow(0 4px 14px rgba(0,0,0,.45));
+}
+.detail-hero-img{
+  width:75%;max-width:260px;border-radius:18px;
+  margin:0 auto 14px;display:block;
+  box-shadow:0 12px 48px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.1);
+}
+.detail-hero-name{
+  font-size:1.9rem;font-weight:900;color:var(--text-bright);
+  margin-bottom:6px;letter-spacing:-.03em;
+}
+.detail-hero-stars{font-size:.8rem;letter-spacing:3px;margin-bottom:6px}
+.detail-hero-bio{
+  color:var(--muted);font-style:italic;font-size:.88rem;
+  margin:8px 0 10px;font-weight:400;line-height:1.5;
+}
+
+/* ── Detail Info Cards ── */
+.detail-stats{
+  display:flex;justify-content:center;gap:32px;margin:14px 0;
+  color:var(--muted);font-size:.78rem;font-weight:500;
+}
+.detail-stats .stat-val{
+  font-size:1.3rem;font-weight:800;color:var(--text-bright);display:block;
+}
+.mood-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;border-radius:20px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  font-size:.84rem;font-weight:600;color:var(--text);
+}
+.bounty-card{
+  text-align:center;
+  background:linear-gradient(135deg,rgba(240,180,42,.06),var(--glass));
+  border-color:rgba(240,180,42,.15);
+}
+
+/* ── Hint Box ── */
+.hint-box{
+  background:rgba(240,180,42,.06);border:1px solid rgba(240,180,42,.15);
+  border-radius:12px;padding:14px;margin:12px 0;
+}
+.hint-box .hint-label{
+  font-size:.65rem;color:var(--yellow);font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;
+}
+.hint-box .hint-text{font-size:.9rem;line-height:1.5;color:var(--text)}
+
+/* ── Speech Bubble ── */
+.speech-bubble{
+  position:relative;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:16px 16px 16px 4px;
+  padding:16px 18px;margin-bottom:12px;
+}
+.speech-bubble::before{
+  content:'';position:absolute;bottom:-8px;left:20px;
+  width:0;height:0;
+  border:8px solid transparent;
+  border-top-color:rgba(255,255,255,.08);
+  border-bottom:0;
+}
+.speech-label{
+  font-size:.7rem;font-weight:700;color:var(--teal);
+  text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;
+}
+.speech-text{
+  font-style:italic;font-size:.92rem;color:var(--text);line-height:1.5;
+}
+.speech-quack{
+  font-size:.8rem;color:var(--muted);margin-top:8px;font-style:normal;
+}
+
+/* ── Whisper Card ── */
+.whisper-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:14px 16px;margin-bottom:12px;
+}
+.whisper-label{
+  font-size:.65rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--muted);margin-bottom:5px;
+}
+.whisper-text{
+  font-size:.82rem;color:var(--muted);font-style:italic;line-height:1.5;
+}
+
+/* ── Relationship Chips ── */
+.rel-chips{display:flex;flex-wrap:wrap;gap:8px}
+.rel-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:20px;
+  font-size:.76rem;font-weight:500;line-height:1.3;color:var(--text);
+}
+.rel-chip-friend{
+  background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.18);
+}
+.rel-chip-rival{
+  background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.14);
+}
+
+/* ── Passport Stamps ── */
+.passport-book{
+  display:flex;flex-wrap:wrap;gap:10px;padding:4px 0;
+}
+.passport-stamp{
+  background:rgba(14,165,199,.05);
+  border:1.5px dashed rgba(14,165,199,.2);
+  border-radius:10px;padding:12px 14px;
+  min-width:130px;flex:1 1 calc(50% - 5px);
+  position:relative;transition:transform .15s;
+}
+.passport-stamp:nth-child(odd){transform:rotate(-.7deg)}
+.passport-stamp:nth-child(even){transform:rotate(.7deg)}
+.passport-stamp:nth-child(3n){transform:rotate(-1.1deg)}
+.passport-stamp:nth-child(4n){transform:rotate(.9deg)}
+.stamp-num{
+  position:absolute;top:6px;right:8px;
+  font-size:.58rem;font-weight:800;color:rgba(14,165,199,.35);
+}
+.stamp-location{
+  font-weight:800;font-size:.85rem;color:var(--teal);margin-bottom:2px;
+}
+.stamp-finder{font-weight:600;font-size:.76rem;color:var(--text)}
+.stamp-date{font-size:.66rem;color:var(--muted);margin-top:2px}
+.stamp-diff{font-size:.64rem;color:var(--muted);font-style:italic}
+.stamp-photo{
+  max-width:80px;border-radius:6px;margin-top:6px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.08);
+}
+
+/* ── Photos ── */
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.photo-grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer;border:1px solid var(--glass-border)}
+.hide-photo{width:100%;max-height:240px;object-fit:cover;border-radius:var(--radius);margin:10px 0;border:1px solid var(--glass-border)}
+
+/* ── Buttons ── */
+button{
+  font-family:inherit;cursor:pointer;border:none;
+  font-size:.95rem;border-radius:var(--radius);
+  min-height:48px;padding:14px 24px;
+  transition:transform .1s,box-shadow .2s;
+}
+button:active{transform:scale(0.97)}
 .btn-primary{
   background:linear-gradient(135deg,#EAB308,#CA8A04);
   color:#1a1a2e;font-weight:700;width:100%;font-size:1rem;
@@ -118,7 +444,25 @@ p.intro,.intro{text-align:center;color:var(--muted);font-size:.85rem;margin:12px
   font-size:.82rem;text-align:center;min-height:auto;padding:10px;
 }
 
-/* Difficulty */
+/* ── Form Elements ── */
+input,textarea,select{
+  font-family:inherit;font-size:.95rem;
+  background:rgba(255,255,255,.06);color:var(--text);
+  border:1px solid var(--glass-border);border-radius:10px;
+  padding:14px 16px;width:100%;min-height:48px;
+  transition:border-color .2s;
+}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--teal)}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237B8CA3' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+textarea{resize:vertical;min-height:80px}
+.form-group{margin-bottom:14px}
+.form-group label{
+  display:block;font-size:.75rem;color:var(--muted);margin-bottom:5px;
+  font-weight:600;text-transform:uppercase;letter-spacing:.04em;
+}
+.form-group .bonus{color:var(--green);font-size:.7rem;font-weight:600;text-transform:none;letter-spacing:0}
+
+/* ── Difficulty ── */
 .diff-group{display:flex;gap:8px;margin:8px 0}
 .diff-btn{
   flex:1;padding:12px 8px;font-size:.82rem;font-weight:600;
@@ -128,125 +472,7 @@ p.intro,.intro{text-align:center;color:var(--muted);font-size:.85rem;margin:12px
 }
 .diff-btn.active{border-color:var(--teal);color:var(--teal);background:var(--teal-light)}
 
-/* Duck Grid */
-.duck-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.grid-card{
-  background:var(--glass);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  border-radius:var(--radius);
-  padding:16px 12px;text-align:center;
-  border:1px solid var(--glass-border);
-  transition:transform .12s;
-  position:relative;overflow:hidden;
-}
-.grid-card .duck-emoji{font-size:2rem;margin-bottom:6px;display:block;filter:drop-shadow(0 2px 6px rgba(0,0,0,.3))}
-.grid-card .duck-name{font-weight:800;font-size:.88rem;margin-bottom:5px;color:var(--text-bright);letter-spacing:-.01em}
-.grid-card .duck-meta{color:var(--muted);font-size:.68rem;margin-top:4px;line-height:1.4}
-.grid-card .found-check{position:absolute;top:8px;right:8px;font-size:.9rem}
-.grid-card[data-rarity="common"]{border-color:rgba(140,146,154,.15);box-shadow:0 2px 12px var(--common-glow)}
-.grid-card[data-rarity="uncommon"]{border-color:rgba(34,197,94,.2);box-shadow:0 2px 16px var(--uncommon-glow)}
-.grid-card[data-rarity="rare"]{border-color:rgba(59,130,246,.2);box-shadow:0 2px 16px var(--rare-glow)}
-.grid-card[data-rarity="legendary"]{border-color:rgba(234,179,8,.25);box-shadow:0 2px 20px var(--legendary-glow),inset 0 0 30px rgba(234,179,8,.03)}
-.grid-card[data-rarity="mythic"]{border-color:rgba(168,85,247,.3);box-shadow:0 2px 24px var(--mythic-glow),inset 0 0 30px rgba(168,85,247,.04);animation:mythicPulse 3s ease-in-out infinite}
-@keyframes mythicPulse{
-  0%,100%{box-shadow:0 2px 24px var(--mythic-glow)}
-  50%{box-shadow:0 4px 32px rgba(168,85,247,.45),0 0 60px rgba(168,85,247,.1)}
-}
-
-/* Leaderboard */
-.lb-row{
-  display:flex;align-items:center;padding:12px 0;
-  border-bottom:1px solid rgba(255,255,255,.05);
-}
-.lb-row:last-child{border-bottom:none}
-.lb-rank{font-size:1.1rem;font-weight:800;width:36px;text-align:center;color:var(--muted)}
-.lb-rank.gold{color:#FACC15}.lb-rank.silver{color:#9CA3AF}.lb-rank.bronze{color:#CD7F32}
-.lb-info{flex:1;margin-left:10px}
-.lb-name{font-weight:700;font-size:.9rem;color:var(--text-bright)}
-.lb-stats{color:var(--muted);font-size:.72rem;margin-top:1px}
-.lb-pts{font-weight:800;font-size:1rem;color:var(--yellow)}
-
-/* Feed */
-.feed-item{
-  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);
-  font-size:.84rem;line-height:1.5;color:var(--text);
-}
-.feed-item:last-child{border-bottom:none}
-.feed-item strong{color:var(--text-bright)}
-.feed-time{color:var(--muted);font-size:.7rem}
-.feed-cold{color:var(--red)}
-
-/* Passport */
-.passport{margin-top:12px}
-.passport-entry{
-  display:flex;align-items:flex-start;gap:12px;
-  padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05);
-}
-.passport-entry:last-child{border-bottom:none}
-.passport-num{
-  background:rgba(14,165,199,.15);color:var(--teal);
-  width:26px;height:26px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:.7rem;font-weight:700;flex-shrink:0;margin-top:2px;
-  border:1px solid rgba(14,165,199,.25);
-}
-.passport-detail{flex:1;font-size:.82rem;line-height:1.4}
-.passport-detail strong{color:var(--teal)}
-.passport-detail .meta{color:var(--muted);font-size:.7rem}
-
-/* Photos */
-.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
-.photo-grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer;border:1px solid var(--glass-border)}
-.hide-photo{width:100%;max-height:240px;object-fit:cover;border-radius:var(--radius);margin:10px 0;border:1px solid var(--glass-border)}
-
-/* Sections */
-.section{margin-top:28px}
-.section-title{
-  font-size:.82rem;font-weight:700;margin-bottom:12px;
-  color:var(--muted);display:flex;align-items:center;gap:8px;
-  text-transform:uppercase;letter-spacing:.08em;
-}
-
-/* Duck Hero */
-.duck-hero{text-align:center;padding:24px 0 8px}
-.duck-hero .emoji{font-size:4rem;display:block;margin-bottom:4px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
-.duck-hero .hero-img{width:80%;max-width:280px;border-radius:16px;margin:0 auto 12px;display:block;box-shadow:0 8px 40px rgba(0,0,0,.4);border:1px solid var(--glass-border)}
-.duck-hero .name{font-size:1.8rem;font-weight:900;color:var(--text-bright);margin-bottom:6px;letter-spacing:-.03em}
-.duck-hero .bio{color:var(--muted);font-style:italic;font-size:.88rem;margin:6px 0 10px;font-weight:400}
-.duck-stats{
-  display:flex;justify-content:center;gap:32px;margin:14px 0;
-  color:var(--muted);font-size:.78rem;font-weight:500;
-}
-.duck-stats .stat-val{font-size:1.3rem;font-weight:800;color:var(--text-bright);display:block}
-
-/* Hint Box */
-.hint-box{
-  background:rgba(240,180,42,.06);border:1px solid rgba(240,180,42,.15);
-  border-radius:12px;padding:14px;margin:12px 0;
-}
-.hint-box .hint-label{font-size:.65rem;color:var(--yellow);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
-.hint-box .hint-text{font-size:.9rem;line-height:1.5;color:var(--text)}
-
-/* Steps */
-.step{display:none}
-.step.active{display:block}
-
-/* Celebration */
-.celebration{text-align:center;padding:24px 0}
-.celebration .big-emoji{font-size:4.5rem;display:block;animation:celebBounce .6s ease;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3))}
-.celebration .congrats{font-size:1.5rem;font-weight:900;color:var(--text-bright);margin:12px 0 4px;letter-spacing:-.02em}
-.celebration .points-earned{font-size:1.1rem;color:var(--teal);margin-bottom:16px;font-weight:600}
-@keyframes celebBounce{
-  0%{transform:scale(0.2) rotate(-20deg);opacity:0}
-  60%{transform:scale(1.1) rotate(3deg)}
-  100%{transform:scale(1) rotate(0deg)}
-}
-
-/* Form */
-.form-group{margin-bottom:14px}
-.form-group label{display:block;font-size:.75rem;color:var(--muted);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
-.form-group .bonus{color:var(--green);font-size:.7rem;font-weight:600;text-transform:none;letter-spacing:0}
-
+/* ── Photo Upload ── */
 .photo-upload{
   position:relative;overflow:hidden;
   background:var(--surface2);border:1px dashed rgba(255,255,255,.15);
@@ -258,45 +484,22 @@ p.intro,.intro{text-align:center;color:var(--muted);font-size:.85rem;margin:12px
 .photo-upload input{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer}
 .photo-upload .preview{max-width:100%;max-height:200px;border-radius:8px;margin-top:8px}
 
-/* Confetti */
-#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+/* ── Find Flow Steps ── */
+.step{display:none}
+.step.active{display:block}
 
-/* Lightbox */
-.lightbox{
-  position:fixed;top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,.92);z-index:9998;
-  display:flex;align-items:center;justify-content:center;
-  padding:20px;cursor:pointer;
+/* ── Celebration ── */
+.celebration{text-align:center;padding:24px 0}
+.celebration .big-emoji{font-size:4.5rem;display:block;animation:celebBounce .6s ease;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3))}
+.celebration .congrats{font-size:1.5rem;font-weight:900;color:var(--text-bright);margin:12px 0 4px;letter-spacing:-.02em}
+.celebration .points-earned{font-size:1.1rem;color:var(--teal);margin-bottom:16px;font-weight:600}
+@keyframes celebBounce{
+  0%{transform:scale(0.2) rotate(-20deg);opacity:0}
+  60%{transform:scale(1.1) rotate(3deg)}
+  100%{transform:scale(1) rotate(0deg)}
 }
-.lightbox img{max-width:100%;max-height:90vh;border-radius:8px;object-fit:contain}
 
-/* Footer */
-.footer{text-align:center;padding:30px 0 20px;color:var(--muted);font-size:.7rem;font-weight:500;letter-spacing:.03em}
-
-/* Back */
-.back-btn{
-  display:inline-flex;align-items:center;gap:6px;
-  color:var(--muted);font-size:.82rem;padding:12px 0;
-  background:none;border:none;min-height:44px;cursor:pointer;font-weight:600;
-  transition:color .15s;
-}
-.back-btn:hover{color:var(--teal)}
-
-/* Loading */
-.loading{text-align:center;padding:40px 0;color:var(--muted)}
-.spinner{
-  display:inline-block;width:28px;height:28px;
-  border:2px solid rgba(255,255,255,.1);border-top-color:var(--teal);
-  border-radius:50%;animation:spin .7s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* Animations */
-.fade-in{animation:fadeIn .35s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.reveal-delay{opacity:0;animation:fadeIn .45s ease forwards;animation-delay:.4s}
-.reveal-delay-2{opacity:0;animation:fadeIn .4s ease forwards;animation-delay:.7s}
-
+/* ── Toast ── */
 .toast{
   position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
   background:rgba(255,255,255,.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
@@ -307,10 +510,80 @@ p.intro,.intro{text-align:center;color:var(--muted);font-size:.85rem;margin:12px
 }
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 @keyframes toastOut{from{opacity:1}to{opacity:0}}
-</style>
+
+/* ── Lightbox ── */
+.lightbox{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,.92);z-index:9998;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;cursor:pointer;
+}
+.lightbox img{max-width:100%;max-height:90vh;border-radius:8px;object-fit:contain}
+
+/* ── Confetti ── */
+#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+
+/* ── Loading ── */
+.loading{text-align:center;padding:40px 0;color:var(--muted)}
+.spinner{
+  display:inline-block;width:28px;height:28px;
+  border:2px solid rgba(255,255,255,.1);border-top-color:var(--teal);
+  border-radius:50%;animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Back Button ── */
+.back-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  color:var(--muted);font-size:.82rem;padding:12px 0;
+  background:none;border:none;min-height:44px;cursor:pointer;font-weight:600;
+  transition:color .15s;
+}
+.back-btn:hover{color:var(--teal)}
+
+/* ── Footer ── */
+.footer{text-align:center;padding:30px 0 20px;color:var(--muted);font-size:.7rem;font-weight:500;letter-spacing:.03em}
+
+/* ── Seasonal Line ── */
+.seasonal-line{
+  text-align:center;font-size:.78rem;color:var(--muted);
+  margin:8px 0;font-style:italic;
+}
+
+/* ── Classified Card ── */
+.classified-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.06);
+}
+
+/* ── Animations ── */
+.fade-in{animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.reveal-delay{opacity:0;animation:fadeIn .45s ease forwards;animation-delay:.4s}
+.reveal-delay-2{opacity:0;animation:fadeIn .4s ease forwards;animation-delay:.7s}
+
+/* ── Legacy compat (used by unchanged flow functions) ── */
+.section-title{
+  font-size:.7rem;font-weight:700;margin-bottom:14px;
+  color:var(--muted);display:flex;align-items:center;gap:10px;
+  text-transform:uppercase;letter-spacing:.08em;
+}
+.duck-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid-card{
+  background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-radius:var(--radius);padding:16px 12px;text-align:center;
+  border:1px solid var(--glass-border);position:relative;overflow:hidden;
+}
+.duck-emoji{font-size:2rem;margin-bottom:6px;display:block}
+.duck-name{font-weight:800;font-size:.88rem;margin-bottom:5px;color:var(--text-bright)}
+.duck-meta{color:var(--muted);font-size:.68rem;margin-top:4px;line-height:1.4}
+.found-check{position:absolute;top:8px;right:8px;font-size:.9rem}
+
+p.intro,.intro{text-align:center;color:var(--muted);font-size:.85rem;margin:12px 0 0;line-height:1.6;font-weight:400}
 </style>
 </head>
 <body>
+<div class="ocean-wave"></div>
 <canvas id="confetti-canvas"></canvas>
 <div id="app" class="container"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -362,6 +635,14 @@ function bountyHTML(bounty){
   let t=`${bounty.pts} pts`;
   if(hot)t=`🔥 BOUNTY: ${bounty.pts} pts — unfound ${Math.floor(bounty.hours)}h!`;
   return`<span class="bounty${hot?' hot':''}">${t}</span>`;
+}
+
+// ── Rarity Stars (presentation helper) ──
+function rarityStars(rarity){
+  const r=(rarity||'common').toLowerCase();
+  const map={common:1,uncommon:2,rare:3,legendary:4,mythic:5};
+  const n=map[r]||1;
+  return '\u2605'.repeat(n)+'\u2606'.repeat(5-n);
 }
 
 // ── Duck Moods ──
@@ -1116,7 +1397,6 @@ function calcLeaderboard(){
     if(!duck)continue;
     const name=f.finder_name||'Anonymous';
     if(!board[name])board[name]={name,pts:0,ducks:0};
-    // Calculate bounty at time of find
     const prevFindings=allFindings.filter(x=>x.duck_id===f.duck_id&&new Date(x.found_at)<new Date(f.found_at));
     const lastTime=prevFindings.length?prevFindings[0].found_at:duck.created_at;
     const b=calcBounty(duck.rarity,lastTime);
@@ -1132,7 +1412,6 @@ function calcLeaderboard(){
 // ── Activity Feed ──
 function buildFeed(){
   const items=[];
-  // Recent finds
   const recent=allFindings.slice(0,10);
   for(const f of recent){
     const duck=allDucks.find(d=>d.id===f.duck_id);
@@ -1143,7 +1422,6 @@ function buildFeed(){
       html:`${duckEmoji(duck)} <strong>${esc(duck.name)}</strong> was found at ${esc(f.location||'unknown')}! <span class="feed-time">${timeAgo(f.found_at)}</span>`
     });
   }
-  // Cold ducks (unfound >12h)
   for(const duck of allDucks){
     const h=hoursSince(lastFoundTime(duck));
     if(h>12){
@@ -1185,48 +1463,51 @@ function renderHome(){
   const feed=buildFeed();
   const lb=calcLeaderboard();
   const myFinds=getMyFinds();
-
-  // Photo collection
   const photos=allFindings.filter(f=>f.photo_url).slice(0,9);
 
   let html=`
-    <div class="header fade-in">
-      <h1>🦆 Find the Duckies!</h1>
-      <div class="subtitle">Boston to Bermuda · Norwegian · July 5–12, 2026</div>
+    <div class="hero-splash fade-in">
+      <div class="hero-pre">THE GREAT</div>
+      <h1 class="hero-title">DUCK<br>HUNT</h1>
+      <div class="hero-route">Boston → Bermuda</div>
+      <div class="hero-count">17 Ducks Hidden Across the Ship</div>
+      <div class="hero-cta">Find · Scan · Rehide</div>
     </div>
-    <p style="text-align:center;color:var(--muted);font-size:0.88rem;margin:10px 0 0;line-height:1.5">
-      17 ducks are hidden on this ship. Find one, scan its QR code, re-hide it. The hunt is on.
-    </p>
   `;
 
-  // Activity Feed
+  // Latest Discoveries
   if(feed.length){
-    html+=`<div class="section"><div class="section-title">📡 Live Activity</div>`;
+    html+=`<div class="section"><div class="section-label">LATEST DISCOVERIES</div>`;
     for(const item of feed){
-      html+=`<div class="feed-item">${item.html}</div>`;
+      const dotClass=item.type==='cold'?'feed-dot-red':'feed-dot-green';
+      html+=`<div class="feed-item"><span class="feed-dot ${dotClass}"></span><div class="feed-content">${item.html}</div></div>`;
     }
     html+=`</div>`;
   }
 
   // The Fleet
-  html+=`<div class="section"><div class="section-title">🦆 The Fleet</div><div class="duck-grid">`;
+  html+=`<div class="section"><div class="section-label">THE FLEET</div><div class="fleet-grid">`;
   for(const duck of allDucks){
     const ff=findingsForDuck(duck.id);
     const b=calcBounty(duck.rarity,lastFoundTime(duck));
     const found=iFoundThis(duck.id);
     const lf=lastFinding(duck.id);
-    const lastSeen=lf?timeAgo(lf.found_at):'Still hiding...';
-    const rarityColor=RARITY_COLORS[(duck.rarity||'common').toLowerCase()]||'#8B8B8B';
+    const lastSeen=lf?('Last seen '+timeAgo(lf.found_at)):'Still hiding\u2026';
+    const r=(duck.rarity||'common').toLowerCase();
 
     html+=`
-      <div class="grid-card" data-rarity="${esc(duck.rarity||'common')}" >
-        ${found?'<span class="found-check">✅</span>':''}
-        <span class="duck-emoji">${duckEmoji(duck)}</span>
-        <div class="duck-name">${esc(duck.name)}</div>
+      <div class="fleet-card" data-rarity="${esc(r)}">
+        ${found?'<div class="fleet-card-found">\u2713</div>':''}
+        <div class="fleet-card-visual">
+          ${duck.image_url
+            ?`<img class="fleet-card-img" src="${esc(duck.image_url)}" alt="${esc(duck.name)}" loading="lazy">`
+            :`<span class="fleet-card-emoji">${duckEmoji(duck)}</span>`}
+        </div>
+        <div class="fleet-card-name">${esc(duck.name)}</div>
+        <div class="fleet-card-stars stars-${r}">${rarityStars(duck.rarity)}</div>
         ${badgeHTML(duck.rarity)}
-        <div style="margin-top:6px">${bountyHTML(b)}</div>
-        <div class="duck-meta" style="margin-top:4px">${getDuckMood(duck).emoji} ${esc(getDuckMood(duck).text)}</div>
-        <div class="duck-meta">${ff.length} find${ff.length!==1?'s':''} · ${lastSeen}</div>
+        <div class="fleet-card-bounty">${bountyHTML(b)}</div>
+        <div class="fleet-card-meta">${lastSeen}</div>
       </div>
     `;
   }
@@ -1234,15 +1515,41 @@ function renderHome(){
 
   // Leaderboard
   if(lb.length){
-    html+=`<div class="section"><div class="section-title">🏆 Leaderboard</div>`;
-    lb.slice(0,15).forEach((p,i)=>{
-      const rc=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    html+=`<div class="section"><div class="section-label">LEADERBOARD</div>`;
+
+    // Podium (top 3)
+    const top3=lb.slice(0,3);
+    if(top3.length){
+      html+=`<div class="podium">`;
+      top3.forEach((p,i)=>{
+        const tier=['gold','silver','bronze'][i];
+        const medal=['\ud83e\udd47','\ud83e\udd48','\ud83e\udd49'][i];
+        html+=`
+          <div class="podium-card podium-${tier}">
+            <div class="podium-medal">${medal}</div>
+            <div class="podium-info">
+              <div class="podium-name">${esc(p.name)}</div>
+              <div class="podium-title">${getLeaderTitle(i)}</div>
+            </div>
+            <div class="podium-right">
+              <div class="podium-score">${p.pts}</div>
+              <div class="podium-ducks">${p.ducks} duck${p.ducks!==1?'s':''}</div>
+            </div>
+          </div>
+        `;
+      });
+      html+=`</div>`;
+    }
+
+    // Compact rows (4th place onward)
+    lb.slice(3,15).forEach((p,i)=>{
+      const rank=i+4;
       html+=`
         <div class="lb-row">
-          <div class="lb-rank ${rc}">${i<3?['🥇','🥈','🥉'][i]:(i+1)}</div>
+          <div class="lb-rank">${rank}</div>
           <div class="lb-info">
             <div class="lb-name">${esc(p.name)}</div>
-            <div class="lb-stats">${getLeaderTitle(i)} · ${p.ducks} duck${p.ducks!==1?'s':''}</div>
+            <div class="lb-stats">${getLeaderTitle(rank-1)} · ${p.ducks} duck${p.ducks!==1?'s':''}</div>
           </div>
           <div class="lb-pts">${p.pts}</div>
         </div>
@@ -1253,7 +1560,7 @@ function renderHome(){
 
   // Recent photos
   if(photos.length){
-    html+=`<div class="section"><div class="section-title">📸 Recent Photos</div><div class="photo-grid">`;
+    html+=`<div class="section"><div class="section-label">RECENT PHOTOS</div><div class="photo-grid">`;
     for(const f of photos){
       html+=`<img src="${esc(f.photo_url)}" alt="Duck find photo" loading="lazy" onclick="openLightbox('${esc(f.photo_url)}')">`;
     }
@@ -1262,7 +1569,7 @@ function renderHome(){
 
   html+=`<div class="footer">FindtheDuckies.com · Boston to Bermuda 2026</div>`;
   app.innerHTML=html;
-  app.querySelector('.header').scrollIntoView({behavior:'auto'});
+  app.querySelector('.hero-splash').scrollIntoView({behavior:'auto'});
 }
 
 // ── DUCK PAGE ──
@@ -1275,31 +1582,52 @@ function renderDuck(id){
   const b=calcBounty(duck.rarity,lastFoundTime(duck));
   const uniqueLocations=new Set(ff.map(f=>f.location).filter(Boolean));
   const found=iFoundThis(duck.id);
+  const r=(duck.rarity||'common').toLowerCase();
+  const mood=getDuckMood(duck);
 
   let html=`
     <button class="back-btn" onclick="location.hash='#/'">← All Ducks</button>
-    <div class="duck-hero fade-in">
-      ${duck.image_url?`<img class="hero-img" src="${esc(duck.image_url)}" alt="${esc(duck.name)}">`:`<span class="emoji">${duckEmoji(duck)}</span>`}
-      <div class="name">${esc(duck.name)}</div>
+
+    <!-- Hero Section -->
+    <div class="detail-hero fade-in" data-rarity="${esc(r)}">
+      ${duck.image_url
+        ?`<img class="detail-hero-img" src="${esc(duck.image_url)}" alt="${esc(duck.name)}">`
+        :`<span class="detail-hero-emoji">${duckEmoji(duck)}</span>`}
+      <div class="detail-hero-name">${esc(duck.name)}</div>
+      <div class="detail-hero-stars stars-${r}">${rarityStars(duck.rarity)}</div>
       ${badgeHTML(duck.rarity)}
-      ${duck.bio?`<div class="bio">"${esc(duck.bio)}"</div>`:''}
-      <div style="margin:10px 0;font-size:.95rem">${getDuckMood(duck).emoji} <strong>${esc(getDuckMood(duck).mood)}</strong> — ${esc(getDuckMood(duck).text)}</div>
-      <div style="margin:12px 0">${bountyHTML(b)}</div>
+      ${duck.bio?`<div class="detail-hero-bio">"${esc(duck.bio)}"</div>`:''}
     </div>
-    <div class="duck-stats">
+
+    <!-- Stats -->
+    <div class="detail-stats">
       <div><span class="stat-val">${ff.length}</span>finds</div>
       <div><span class="stat-val">${uniqueLocations.size}</span>locations</div>
     </div>
+
+    <!-- Mood Card -->
+    <div class="card" style="text-align:center">
+      <div class="section-label-inline">CURRENT MOOD</div>
+      <span class="mood-pill">${mood.emoji} ${esc(mood.mood)}</span>
+      <div style="color:var(--muted);font-size:.84rem;margin-top:8px;line-height:1.4">${esc(mood.text)}</div>
+    </div>
+
+    <!-- Bounty Card -->
+    <div class="card bounty-card">
+      <div class="section-label-inline">CURRENT BOUNTY</div>
+      <div style="margin-top:4px">${bountyHTML(b)}</div>
+    </div>
+
+    <!-- Last Seen Card -->
+    <div class="card">
+      <div class="section-label-inline">LAST SEEN</div>
   `;
 
-  // Last seen
-  html+=`<div class="card" style="text-align:center">`;
   if(lf){
-    html+=`<div style="color:var(--muted);font-size:0.82rem">Last seen</div>
-      <div style="font-size:1.05rem;font-weight:600;margin-top:2px">${esc(lf.location||'Unknown')}, ${timeAgo(lf.found_at)}</div>`;
+    html+=`<div style="font-size:1.05rem;font-weight:600;margin-top:4px">${esc(lf.location||'Unknown')}, ${timeAgo(lf.found_at)}</div>`;
     if(lf.hint){
-      html+=`<div class="hint-box" style="margin-top:12px;text-align:left">
-        <div class="hint-label">💡 Hint from last hider</div>
+      html+=`<div class="hint-box" style="margin-top:12px">
+        <div class="hint-label">HINT FROM LAST HIDER</div>
         <div class="hint-text">${esc(lf.hint)}</div>
       </div>`;
     }
@@ -1311,12 +1639,12 @@ function renderDuck(id){
       html+=`<div style="margin-top:8px;color:var(--muted);font-size:0.82rem">${diffEmoji} Hidden difficulty: <strong>${esc(lf.difficulty)}</strong></div>`;
     }
   } else {
-    html+=`<div style="font-size:1.1rem;font-weight:600">Never been found!</div>
+    html+=`<div style="font-size:1.1rem;font-weight:600;margin-top:4px">Never been found!</div>
       <div style="color:var(--muted);font-size:0.85rem;margin-top:4px">You could be the first 👀</div>`;
   }
   html+=`</div>`;
 
-  // Welcome back (duck remembers you)
+  // Welcome back
   const wb=getWelcomeBack(duck);
   if(wb){
     html+=`<div class="card" style="text-align:center;font-size:.92rem;line-height:1.5">
@@ -1324,7 +1652,7 @@ function renderDuck(id){
     </div>`;
   }
 
-  // Find button / steps — ABOVE personality content
+  // ── FIND BUTTON / Flow Steps ──
   html+=`
     <div id="find-flow">
       <div id="step-button" class="step active" style="margin:16px 0">
@@ -1337,47 +1665,80 @@ function renderDuck(id){
     </div>
   `;
 
-  // Personality content below the CTA
-  html+=`<div class="card reveal-delay" style="text-align:center;font-style:italic;font-size:.92rem;color:var(--teal);line-height:1.5">`
-    +`"\u200b${esc(getDuckDialogue(duck))}"`
-    +`<div class="reveal-delay-2" style="margin-top:8px;font-style:normal;font-size:.82rem;color:var(--muted)">${esc(getQuack(duck.name))}</div>`
-    +`</div>`;
-  const gossipLine=getDuckGossip(duck.name);
-  if(gossipLine) html+=`<div class="card" style="font-size:.82rem;color:var(--muted);font-style:italic;line-height:1.5">\ud83e\udd2b <em>${esc(gossipLine)}</em></div>`;
-  if(getFavoriteSpot(duck.name)) html+=`<div style="text-align:center;font-size:.78rem;color:var(--muted);margin:4px 0">\ud83d\udccd ${esc(getFavoriteSpot(duck.name))}</div>`;
-  if(DUCK_RIVALS[duck.name]) html+=`<div class="card" style="font-size:.8rem;line-height:1.6">`
-    +`<div style="font-weight:700;margin-bottom:4px">Relationships</div>`
-    +`<div>\ud83d\udc9a <strong>${esc(DUCK_RIVALS[duck.name].friend)}</strong> <span style="color:var(--muted)">${esc(DUCK_RIVALS[duck.name].friendWhy)}</span></div>`
-    +`<div>\ud83d\udd34 <strong>${esc(DUCK_RIVALS[duck.name].enemy)}</strong> <span style="color:var(--muted)">${esc(DUCK_RIVALS[duck.name].enemyWhy)}</span></div>`
-    +`</div>`;
-  html+=`<div style="text-align:center;font-size:.78rem;color:var(--muted);margin:4px 0;font-style:italic">\ud83d\udea2 ${esc(getSeasonalLine())}</div>`;
+  // ── Personality Content (below CTA) ──
 
-  // Passport
+  // Speech Bubble (dialogue)
+  html+=`
+    <div class="speech-bubble reveal-delay">
+      <div class="speech-label">\ud83d\udcac ${esc(duck.name)} says\u2026</div>
+      <div class="speech-text">"${esc(getDuckDialogue(duck))}"</div>
+      <div class="speech-quack">${esc(getQuack(duck.name))}</div>
+    </div>
+  `;
+
+  // Gossip (whisper card)
+  const gossipLine=getDuckGossip(duck.name);
+  if(gossipLine){
+    html+=`
+      <div class="whisper-card">
+        <div class="whisper-label">\ud83e\udd2b Psst\u2026</div>
+        <div class="whisper-text">${esc(gossipLine)}</div>
+      </div>
+    `;
+  }
+
+  // Favorite spot
+  if(getFavoriteSpot(duck.name)){
+    html+=`<div class="seasonal-line">\ud83d\udccd ${esc(getFavoriteSpot(duck.name))}</div>`;
+  }
+
+  // Relationships (chip/pill style)
+  if(DUCK_RIVALS[duck.name]){
+    const rel=DUCK_RIVALS[duck.name];
+    html+=`
+      <div class="card">
+        <div class="section-label-inline">RELATIONSHIPS</div>
+        <div class="rel-chips">
+          <span class="rel-chip rel-chip-friend">\ud83d\udc9a <strong>${esc(rel.friend)}</strong>&nbsp;— ${esc(rel.friendWhy)}</span>
+          <span class="rel-chip rel-chip-rival">\ud83d\udd34 <strong>${esc(rel.enemy)}</strong>&nbsp;— ${esc(rel.enemyWhy)}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // Seasonal line
+  html+=`<div class="seasonal-line">\ud83d\udea2 ${esc(getSeasonalLine())}</div>`;
+
+  // Passport (stamps)
   if(ff.length){
-    html+=`<div class="section"><div class="section-title">🛂 Duck Passport</div><div class="passport">`;
+    html+=`<div class="section"><div class="section-label">DUCK PASSPORT</div><div class="passport-book">`;
     ff.slice().reverse().forEach((f,i)=>{
-      const photo=f.photo_url?`<br><img src="${esc(f.photo_url)}" style="max-width:120px;border-radius:6px;margin-top:6px;cursor:pointer" onclick="openLightbox('${esc(f.photo_url)}')" loading="lazy">`:'';
+      const photo=f.photo_url?`<img src="${esc(f.photo_url)}" class="stamp-photo" onclick="openLightbox('${esc(f.photo_url)}')" loading="lazy">`:'';
       html+=`
-        <div class="passport-entry">
-          <div class="passport-num">${i+1}</div>
-          <div class="passport-detail">
-            <strong>${esc(f.finder_name||'Anonymous')}</strong> found at ${esc(f.location||'unknown')}
-            ${f.difficulty?` · ${esc(f.difficulty)}`:''} 
-            <div class="meta">${timeAgo(f.found_at)}</div>
-            ${photo}
-          </div>
+        <div class="passport-stamp">
+          <div class="stamp-num">#${i+1}</div>
+          <div class="stamp-location">${esc(f.location||'Unknown')}</div>
+          <div class="stamp-finder">${esc(f.finder_name||'Anonymous')}</div>
+          <div class="stamp-date">${timeAgo(f.found_at)}${f.difficulty?' · <span class="stamp-diff">'+esc(f.difficulty)+'</span>':''}</div>
+          ${photo}
         </div>
       `;
     });
     html+=`</div></div>`;
   }
 
-  // Funny stats
+  // Classified stats
   const fStats=getFunnyStats(duck.id);
-  html+=`<div class="card" style="font-size:.78rem;color:var(--muted);line-height:1.8">`
-    +`<div style="font-weight:700;color:var(--text);margin-bottom:4px;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em">Duck File (Classified)</div>`
-    +fStats.map(s=>'<div>'+esc(s)+'</div>').join('')
-    +`</div>`;
+  html+=`
+    <div class="card classified-card">
+      <div class="section-label-inline">CLASSIFIED</div>
+      <div style="font-size:.78rem;color:var(--muted);line-height:1.8">
+        ${fStats.map(s=>'<div>'+esc(s)+'</div>').join('')}
+      </div>
+    </div>
+  `;
+
+  // Easter egg
   const egg=checkEasterEgg();
   if(egg) html+=`<div class="card" style="text-align:center;background:var(--yellow-light);border:1px solid rgba(240,180,42,.2);font-weight:600;font-size:.88rem;line-height:1.5">${esc(egg)}</div>`;
 
