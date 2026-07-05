@@ -200,6 +200,7 @@ textarea{resize:vertical;min-height:80px}
 /* ── Duck Hero (detail page) ── */
 .duck-hero{text-align:center;padding:20px 0 8px}
 .duck-hero .emoji{font-size:5rem;display:block;margin-bottom:4px}
+.duck-hero .hero-img{width:85%;max-width:320px;border-radius:20px;margin:0 auto 8px;display:block;box-shadow:0 8px 30px rgba(0,0,0,.12)}
 .duck-hero .name{font-size:2rem;font-weight:700;color:var(--text);margin-bottom:6px}
 .duck-hero .bio{color:var(--muted);font-style:italic;font-size:.92rem;margin:6px 0 10px}
 .duck-stats{
@@ -481,14 +482,33 @@ function checkEasterEgg(){
   return null;
 }
 
-// localStorage found tracking
+// localStorage found tracking + name memory
 function getMyFinds(){try{return JSON.parse(localStorage.getItem('ducky_finds')||'[]')}catch{return[]}}
 function addMyFind(duckId,name,pts){
   const f=getMyFinds();
   if(!f.find(x=>x.id===duckId))f.push({id:duckId,name,pts,at:Date.now()});
   localStorage.setItem('ducky_finds',JSON.stringify(f));
+  if(name&&name!=='Anonymous')localStorage.setItem('ducky_name',name);
 }
 function iFoundThis(duckId){return getMyFinds().some(x=>x.id===duckId)}
+function getMyName(){return localStorage.getItem('ducky_name')||''}
+function getWelcomeBack(duck){
+  const name=getMyName();
+  if(!name)return null;
+  const myFinds=getMyFinds();
+  if(myFinds.length===0)return null;
+  const foundThisOne=myFinds.find(x=>x.id===duck.id);
+  if(foundThisOne)return{name,text:name+', you already found '+duck.name+'! But go ahead, stamp the passport again.'};
+  const today=new Date();
+  const todayFinds=myFinds.filter(f=>{const d=new Date(f.at);return d.toDateString()===today.toDateString()});
+  if(todayFinds.length>=3)return{name,text:'WELCOME BACK, '+name.toUpperCase()+'! This is duck #'+(todayFinds.length+1)+' today. You\'re on a tear.'};
+  if(todayFinds.length>=1)return{name,text:'WELCOME BACK, '+name.toUpperCase()+'! '+duck.name+' is your '+(todayFinds.length+1)+ordSuffix(todayFinds.length+1)+' duck today.'};
+  const lastFind=myFinds[myFinds.length-1];
+  const lastDuck=lastFind?lastFind.name:'';
+  if(lastDuck)return{name,text:'WELCOME BACK, '+name.toUpperCase()+'! '+duck.name+' remembers you from when you found '+lastDuck+'.'};
+  return{name,text:'WELCOME BACK, '+name.toUpperCase()+'! '+duck.name+' has been expecting you.'};
+}
+function ordSuffix(n){const s=['th','st','nd','rd'];const v=n%100;return(s[(v-20)%10]||s[v]||s[0])}
 
 // Photo compression
 function compressPhoto(file){
@@ -767,7 +787,7 @@ function renderDuck(id){
   let html=`
     <button class="back-btn" onclick="location.hash='#/'">← All Ducks</button>
     <div class="duck-hero fade-in">
-      <span class="emoji">${duckEmoji(duck)}</span>
+      ${duck.image_url?`<img class="hero-img" src="${esc(duck.image_url)}" alt="${esc(duck.name)}">`:`<span class="emoji">${duckEmoji(duck)}</span>`}
       <div class="name">${esc(duck.name)}</div>
       ${badgeHTML(duck.rarity)}
       ${duck.bio?`<div class="bio">"${esc(duck.bio)}"</div>`:''}
@@ -806,6 +826,14 @@ function renderDuck(id){
       <div style="color:var(--muted);font-size:0.85rem;margin-top:4px">You could be the first 👀</div>`;
   }
   html+=`</div>`;
+
+  // Welcome back (duck remembers you)
+  const wb=getWelcomeBack(duck);
+  if(wb){
+    html+=`<div class="card" style="text-align:center;background:var(--teal-light);border:2px solid #A7F3D0;font-size:.95rem;line-height:1.5">
+      <div style="font-weight:700;font-size:1.05rem;margin-bottom:4px">👋 ${esc(wb.text)}</div>
+    </div>`;
+  }
 
   // Funny stats
   const fStats=getFunnyStats(duck.id);
@@ -898,7 +926,7 @@ window.startFind=function(){
       <div class="card fade-in">
         <div class="form-group">
           <label>Your Name</label>
-          <input type="text" id="find-name" placeholder="What should we call you?" maxlength="40">
+          <input type="text" id="find-name" placeholder="What should we call you?" maxlength="40" value="${esc(getMyName())}">
         </div>
         <div class="form-group">
           <label>Where did you find it?</label>
@@ -999,7 +1027,7 @@ window.submitFind=async function(){
         </div>
       </div>
       <button class="btn-primary" onclick="submitRehide()" id="submit-rehide-btn">DUCK HIDDEN! 🫣</button>
-      <button class="btn-skip" onclick="skipRehide()">Skip — I'm keeping this duck for now</button>
+      <button class="btn-skip" onclick="skipRehide()">Taking ${esc(duck.name)} home? Thanks for playing!</button>
     </div>
   `;
   showStep('rehide');
