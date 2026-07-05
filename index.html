@@ -127,15 +127,15 @@ textarea{resize:vertical;min-height:80px}
 
 /* ── Duck Grid ── */
 .duck-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid-card{
+.grid-card{cursor:default;
   background:var(--surface);border-radius:var(--radius);
-  padding:18px 14px;text-align:center;cursor:pointer;
+  padding:18px 14px;text-align:center;
   box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.04);
   transition:transform .15s,box-shadow .2s;
   position:relative;overflow:hidden;
   border:2px solid transparent;
 }
-.grid-card:active{transform:scale(0.97)}
+
 .grid-card .duck-emoji{font-size:2.8rem;margin-bottom:8px;display:block}
 .grid-card .duck-name{font-weight:700;font-size:1rem;margin-bottom:6px;color:var(--text)}
 .grid-card .duck-meta{color:var(--muted);font-size:.72rem;margin-top:6px}
@@ -572,7 +572,7 @@ function renderHome(){
     const rarityColor=RARITY_COLORS[(duck.rarity||'common').toLowerCase()]||'#8B8B8B';
 
     html+=`
-      <div class="grid-card" data-rarity="${esc(duck.rarity||'common')}" onclick="location.hash='#/duck/${duck.id}'">
+      <div class="grid-card" data-rarity="${esc(duck.rarity||'common')}" >
         ${found?'<span class="found-check">✅</span>':''}
         <span class="duck-emoji">${duckEmoji(duck)}</span>
         <div class="duck-name">${esc(duck.name)}</div>
